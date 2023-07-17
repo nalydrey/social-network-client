@@ -98,6 +98,8 @@ export const ChatBar = () => {
         }
     }
 
+   
+
     const activeChatUser = activeChat && activeChat.users[0]
 
   return (
@@ -117,6 +119,7 @@ export const ChatBar = () => {
                        />
                        
                        <ChatContent
+                            messageCounter = {messageCounter}
                             currentUserId={currentUser._id}
                             content={messages}
                             onVisible={handlerOnVisible}

@@ -6,11 +6,9 @@ import { MenuItem } from "../UI/MenuItem"
 import { useOnScreen } from '../../hooks/useOnScreen'
 
 interface MessageProps {
-    setLast: (elem: HTMLLIElement)=>void
     setFirst: (elem: HTMLLIElement)=>void
     container: RefObject<HTMLDivElement>
     messageId: string
-    isLast: boolean
     isMyMessage: boolean
     isFirstUnread: boolean
     isRead: boolean
@@ -22,10 +20,8 @@ interface MessageProps {
 }
 
 export const Message = ({
-    setLast = () => {},
     setFirst = () => {},
     container,
-    isLast,
     messageId,
     isMyMessage,
     isFirstUnread,
@@ -46,12 +42,10 @@ export const Message = ({
     useEffect(()=>{
       if(messageRef.current){
         setRefresh(!refresh)
-        if(isLast){
-            setLast(messageRef.current)
-        }
         if(isFirstUnread){
             setFirst(messageRef.current)
         }
+        
     }
     
 
@@ -95,10 +89,10 @@ export const Message = ({
     >
         <Avatar
             src={src}
-            className={`${isMyMessage ? '': 'order-1'} self-end shadow-light`}
+            className={`${isMyMessage ? 'order-1': ''} self-end shadow-light`}
         />
         <div className="w-[90%] relative ">
-            <div className={`flex flex-col px-3 py-1 rounded-3xl shadow-light  ${isMyMessage ? 'rounded-bl-sm bg-blue-200' : 'rounded-br-sm bg-green-200'}`}>   
+            <div className={`flex flex-col px-3 py-1 rounded-3xl shadow-light  ${isMyMessage ? 'rounded-br-sm bg-blue-200' : 'rounded-bl-sm bg-green-200'}`}>   
                 {   
                     isMyMessage &&
                     <div className="relative self-end">
