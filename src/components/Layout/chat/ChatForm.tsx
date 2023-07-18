@@ -1,3 +1,4 @@
+import { BaseSyntheticEvent, ChangeEvent, KeyboardEvent, SyntheticEvent } from 'react';
 import { useFormik } from 'formik'
 import { RoundButton } from '../../UI/RoundButton'
 import { PaperAirplaneIcon } from '@heroicons/react/24/solid'
@@ -25,18 +26,39 @@ export const ChatForm = ({
         }
     })
 
+    const handleChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
+        console.dir(e);
+        if(e.target.scrollTop){
+            const totalHeight = e.target.scrollTop + e.target.scrollHeight
+            e.target.style.height = totalHeight + 'px'
+        }
+        formik.handleChange(e)
+        
+    }
+
+    const handletTextarea = (e: KeyboardEvent<HTMLTextAreaElement>) => {
+        console.dir(e);
+        const element = e.target as HTMLElement
+        if(e.key === 'Enter'){
+            e.preventDefault()
+            element.style.height = 40 + 'px'
+            formik.handleSubmit()
+        }
+    }
+
   return (
     <form 
         className='flex gap-2 p-2 border-t-4 border-sky-700'
         onSubmit={formik.handleSubmit}
     >
         <textarea 
-            className=' w-full border-2 border-sky-500 px-3 rounded-lg focus:border-4 focus:outline-none font-medium text-lg text-sky-700' 
+            className=' duration-300 overflow-hidden resize-none w-full border-2 border-sky-500 px-3 rounded-lg focus:outline-sky-500 focus:outline-4 font-medium text-lg text-sky-700' 
             name='message'
             id='message'
             placeholder='Your message ...'
             value={formik.values.message}
-            onChange={formik.handleChange}
+            onChange={handleChange}
+            onKeyDown={handletTextarea}
         />
         <RoundButton
             title='Send'
