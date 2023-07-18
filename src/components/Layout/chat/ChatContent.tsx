@@ -1,4 +1,4 @@
-import {useRef, useEffect, useState} from 'react'
+import {useRef, useEffect, useState, useMemo} from 'react'
 import { Message } from '../../outputs/Message'
 import { UserModel } from '../../../models/UserModel'
 import moment from 'moment'
@@ -28,30 +28,33 @@ export const ChatContent = ({
     
     let firstUnreadElement: HTMLLIElement | null = null
     const messageContainer = useRef<HTMLDivElement>(null)
-
-    const toFirst = (elem: HTMLLIElement) => {
-            firstUnreadElement = elem
-    }
+    const [firstEnter, setFirstEnter] = useState(true)
+   
 
     useEffect (()=>{
-
-        console.log(firstUnreadElement);
-        
         const lastMessage = content[content.length - 1]
-        if(lastMessage && messageContainer.current){
-            const isEnd = messageContainer.current.scrollHeight - messageContainer.current.scrollTop <=591
-            const isMyLast = lastMessage.user._id === currentUserId
+        if(firstEnter && !!content.length){
+            if(firstUnreadElement){
+                firstUnreadElement.scrollIntoView({behavior: 'instant', block: 'end'})
+            }
             if(!firstUnreadElement){
                 toBottom('instant')
             }
-            else if(isEnd || isMyLast){
+            setFirstEnter(false)
+        }
+        if(lastMessage && messageContainer.current && !firstEnter){
+            const isEnd = messageContainer.current.scrollHeight - messageContainer.current.scrollTop <=591
+            const isMyLast = lastMessage.user._id === currentUserId
+            if(isEnd || isMyLast){
                 toBottom('smooth')
             }
-            else if(firstUnreadElement){
-                firstUnreadElement.scrollIntoView({behavior: 'instant', block: 'end'})
-            }
         }
-    },[content]) 
+    },[content.length]) 
+
+
+    const setFirstUnreadElement = (elem: HTMLLIElement) => {
+        firstUnreadElement = elem
+    }
 
     const toBottom = (behavior: 'smooth' | 'instant' ) => {
         if(messageContainer.current){
@@ -59,12 +62,8 @@ export const ChatContent = ({
             messageContainer.current.scrollTo({top: scrollHeight, behavior})
         }
     }
-
     
-
-
     const firstUnread = content.find(message => !message.isRead)
-    console.log(firstUnread);
     
 
   return (
@@ -85,7 +84,7 @@ export const ChatContent = ({
                                 text = {text}
                                 isRead = {isRead}
                                 container = {messageContainer}
-                                setFirst= {(elem) => (toFirst(elem)) }
+                                setFirst= {(elem) => (setFirstUnreadElement(elem)) }
                                 isFirstUnread = {firstUnread?._id === message._id}
                                 isMyMessage = {user._id === currentUserId}
                                 time = {moment(createdAt).format('D MMM HH:mm')}

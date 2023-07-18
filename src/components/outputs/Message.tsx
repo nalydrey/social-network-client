@@ -1,4 +1,4 @@
-import {useState, useRef, useEffect, MouseEvent, ReactNode, RefObject} from 'react'
+import {useState, useRef, useEffect, MouseEvent, RefObject} from 'react'
 import { CheckIcon, EllipsisHorizontalIcon } from "@heroicons/react/24/solid"
 import { Avatar } from "../UI/Avatar"
 import { Tooltip } from "../UI/Tooltip"
@@ -33,32 +33,29 @@ export const Message = ({
     onVisible = () => {}
 } : MessageProps) => {
 
+    
     const messageRef = useRef<HTMLLIElement | null>(null)
     const [isOpen, setIsOpen] = useState<boolean>(false)
     const [refresh, setRefresh] = useState(false)
 
     const isVisible = useOnScreen(messageRef.current, container.current, 0)
-  
     useEffect(()=>{
-      if(messageRef.current){
-        setRefresh(!refresh)
-        if(isFirstUnread){
-            setFirst(messageRef.current)
+        if(messageRef.current){
+            setRefresh(!refresh)
+            if(isFirstUnread){
+                setFirst(messageRef.current)
+            }
         }
-        
-    }
-    
 
-      const timer = setTimeout(()=>{
-        document.addEventListener('click', closeTooltip)
-        return () => {
-            clearTimeout(timer)
-            document.removeEventListener('click', closeTooltip)
-        }
-      }, 1000)
-      
+        const timer = setTimeout(()=>{
+            document.addEventListener('click', closeTooltip)
+            return () => {
+                clearTimeout(timer)
+                document.removeEventListener('click', closeTooltip)
+            }
+        }, 1000)
+
     },[])
-
   
 
     const closeTooltip = () => {
@@ -84,7 +81,7 @@ export const Message = ({
 
   return (
     <li 
-        className="flex gap-1"
+        className={`flex gap-1`}
         ref = {messageRef}
     >
         <Avatar
