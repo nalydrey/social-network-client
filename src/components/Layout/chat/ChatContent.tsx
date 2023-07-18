@@ -28,6 +28,7 @@ export const ChatContent = ({
     
     let firstUnreadElement: HTMLLIElement | null = null
     const messageContainer = useRef<HTMLDivElement>(null)
+    const button = useRef<HTMLDivElement>(null)
     const [firstEnter, setFirstEnter] = useState(true)
    
 
@@ -51,6 +52,32 @@ export const ChatContent = ({
         }
     },[content.length]) 
 
+    useEffect (()=>{
+        if(messageContainer.current){
+            messageContainer.current.addEventListener('scroll', handlerScroll)
+            handlerScroll()
+        }
+        return () => {
+            if(messageContainer.current){
+                messageContainer.current.removeEventListener('scroll', handlerScroll)
+            }
+        }
+    },[messageContainer.current])
+
+    const handlerScroll = () => {
+        if(messageContainer.current){
+            const isEnd = messageContainer.current.scrollHeight - messageContainer.current.scrollTop <=510
+            if(button.current){
+                if(isEnd){
+                    button.current.style.bottom = '-70px'
+                }
+                else{
+                    button.current.style.bottom = '10px'
+                }
+            }
+        }
+    }
+
 
     const setFirstUnreadElement = (elem: HTMLLIElement) => {
         firstUnreadElement = elem
@@ -71,7 +98,7 @@ export const ChatContent = ({
         isAlternate = {!content.length}
         alternateComponent = {'No Messages'}
     >
-        <div className='relative'>
+        <div className='relative overflow-hidden'>
             <div ref={messageContainer} className=' max-h-[500px] overflow-auto'>
                 <ul className='py-2 px-3 flex flex-col gap-3 '>
                     {content.map((message, i) => {
@@ -97,7 +124,10 @@ export const ChatContent = ({
                     )}
                 </ul>
             </div>
-            <div className='absolute bottom-0 right-5'>
+            <div 
+                className='absolute right-5 -bottom-40 duration-300'
+                ref = {button}    
+            >
                 <RoundButton
                     d = {10}
                     onClick={() => toBottom('smooth')}
