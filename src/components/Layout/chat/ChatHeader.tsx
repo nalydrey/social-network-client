@@ -5,6 +5,7 @@ import { Tooltip } from '../../UI/Tooltip'
 import { MenuItem } from '../../UI/MenuItem'
 
 interface ChatHeaderProps {
+    isTyping: boolean
     avatar: string
     isOnline: boolean
     chatName: string
@@ -15,6 +16,7 @@ interface ChatHeaderProps {
 export const ChatHeader = ({
     onHide,
     onDelete,
+    isTyping,
     avatar,
     isOnline,
     chatName
@@ -38,9 +40,12 @@ export const ChatHeader = ({
                 <div className='absolute bottom-0 left-0 -translate-x-1/4 translate-y-1/4 w-3 h-3 rounded-full bg-green-600'/>
             }
         </div>
-        <p className='grow text-center text-2xl font-bold text-sky-700'>
-            {chatName}
-        </p>
+        <div className="grow">
+            <p className='text-center text-2xl font-bold text-sky-700'>
+                {chatName}
+            </p>
+            <p className={`text-center text-lg font-medium text-blue-600 h-7 animate-bounce  duration-300 ${isTyping ? 'opacity-100': 'opacity-0'}`}>Typing...</p>
+        </div>
         <div className="relative">
                         <button className=""
                             onClick={handleOpen}

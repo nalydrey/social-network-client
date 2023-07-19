@@ -9,7 +9,7 @@ import { URL } from '../../http'
 import { MessageModel} from '../../models/MessageModel'
 import { UserModel } from '../../models/UserModel'
 import { socket } from '../../App'
-import { Chat, decreaseCounter, activateChat, deactivateChat } from '../../slices/chatSlice'
+import { Chat, decreaseCounter, activateChat, deactivateChat, setTypingStatus } from '../../slices/chatSlice'
 import { createTempMessage, getMessages } from '../../slices/messagesSlice'
 import { ChatHeader } from '../Layout/chat/ChatHeader'
 import { nanoid } from '@reduxjs/toolkit'
@@ -21,6 +21,7 @@ import { ChatContent } from '../Layout/chat/ChatContent'
 
 export const ChatBar = () => {
 
+    const text = 'No Chats, while'
     const dispatch = useAppDispatch()
 
     const {messageCounter} = useAppSelector<Chat>(state => state.chats)
@@ -104,7 +105,17 @@ export const ChatBar = () => {
         }
     }
 
-   
+    const headerStartTyping = () => {
+        if(activeChat){
+            socket.emit('startTyping', {chatId: activeChat._id})
+        }
+    }
+
+    const headerFinishTyping = () => {
+        if(activeChat){
+            socket.emit('endTyping',  {chatId: activeChat._id})
+        }
+    }
 
     const activeChatUser = activeChat && activeChat.users[0]
 
@@ -119,6 +130,7 @@ export const ChatBar = () => {
                         className='min-w-[400px]'
                     >
                        <ChatHeader
+                            isTyping = {activeChat.isTyping}
                             chatName={activeChatUser.private.firstName + ' ' + activeChatUser.private.lastName}
                             isOnline = {activeChatUser.isOnline}
                             avatar = {activeChatUser.private.avatar ? URL + activeChatUser.private.avatar : ''}
@@ -133,25 +145,37 @@ export const ChatBar = () => {
                             onVisible={handlerOnVisible}
                             onDelete={handlerDeleteMessage}
                             onEdit={()=>{}}
+                            offTyping={()=>{dispatch(setTypingStatus({chatId: activeChat._id, status: false }))}}
                        />
                         
                         <ChatForm
                             onSubmit = {handleSubmit}
+                            onStartTyping = {headerStartTyping}
+                            onFinishTyping = {headerFinishTyping}
                         />
                     </ContentBox>
                 </div>
             }
             <ul className={`flex flex-col gap-3 duration-300 absolute right-0 bg-orange-200 rounded-xl p-2 ${isOpen? 'scale-1' : 'scale-0'}`}>
-                {chats.map(chat => (
-                    <ChatItem 
-                        key ={chat._id}
-                        chatId={chat._id}
-                        src={chat.users[0].private.avatar}
-                        isOnline ={chat.users[0].isOnline}
-                        counter={chat.unreadMessageCount}
-                        onClick={handleOpenChat}
-                    />
-                ))}
+                {
+                    !!chats.length ?
+                    chats.map(chat => (
+                        <ChatItem 
+                            key ={chat._id}
+                            chatId={chat._id}
+                            isTyping = {chat.isTyping}
+                            src={chat.users[0].private.avatar}
+                            isOnline ={chat.users[0].isOnline}
+                            counter={chat.unreadMessageCount}
+                            onClick={handleOpenChat}
+                        />
+                    ))
+                    :
+                    Array.from(text).map((word, i) => (
+                    <li key={i} className='font-bold text-3xl text-sky-700 px-5'>{word}</li>
+                    ))
+                }
+
             </ul>
         </div>
         <div className='flex justify-center items-center'>

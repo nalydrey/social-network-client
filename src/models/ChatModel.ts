@@ -8,4 +8,5 @@ export interface ChatModel {
   createAt: Date
   updateAt: Date
   isActive: boolean
+  isTyping: boolean
 }

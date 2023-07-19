@@ -1,5 +1,5 @@
 import { socket } from "./App"
-import { addCreatedChat, chatUserConnect, chatUserDisconnect, deleteChat } from "./slices/chatSlice"
+import { addCreatedChat, chatUserConnect, chatUserDisconnect, deleteChat, setTypingStatus } from "./slices/chatSlice"
 import { createMessage, deleteMessage, readMessage } from "./slices/messagesSlice"
 import { connectUser, disconnectUser } from "./slices/usersSlice"
 import type { AppDispatch } from "./store/store"
@@ -36,7 +36,9 @@ export const subscribes: SubscribesFunc = (dispatch, currentUser, controller) =>
         dispatch(createMessage(data))
     })
     socket.on('chatIsCreated', (data) => {
-        dispatch(addCreatedChat(data))
+        console.log(data);
+        
+        dispatch(addCreatedChat({...data, currentUserId: currentUser._id}))
     })
     socket.on('messageIsRead', (data) => {
         dispatch(readMessage({messageId: data}))
@@ -47,6 +49,14 @@ export const subscribes: SubscribesFunc = (dispatch, currentUser, controller) =>
     socket.on('chatIsDeleted', (chatId: string)=>{
         dispatch(deleteChat(chatId))
     })
+    socket.on('typingStarted', (chatId: string)=>{
+        dispatch(setTypingStatus({chatId, status: true}))
+    })
+    socket.on('typingFinished', (chatId: string)=>{
+        dispatch(setTypingStatus({chatId, status: false}))
+        
+    })
+
 
     socket.on('userIsInvited', moveToInvitation)
     socket.on('suggestationIsCanceled', removeFromInvitation)

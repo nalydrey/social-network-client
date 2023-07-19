@@ -10,6 +10,7 @@ import { ChevronDownIcon } from '@heroicons/react/24/solid'
 import { CountLabel } from '../../outputs/CountLabel'
 import { useAppDispatch, useAppSelector } from '../../../hooks/hooks'
 import { turnOffFirstLoad } from '../../../slices/messagesSlice'
+import { setTypingStatus } from '../../../slices/chatSlice'
 
 interface ChatContentProps {
     messageCounter: number
@@ -18,6 +19,7 @@ interface ChatContentProps {
     onDelete: (messageId: string, chatId: string) => void
     onEdit: () => void
     onVisible: (messageId: string, userId: string, isRead: boolean, chatId: string) => void
+    offTyping: () => void
 }
 
 export const ChatContent = ({
@@ -25,7 +27,8 @@ export const ChatContent = ({
     content,
     currentUserId,
     onDelete,
-    onVisible
+    onVisible,
+    offTyping
 }:ChatContentProps) => {
     
 
@@ -38,7 +41,7 @@ export const ChatContent = ({
     useEffect (()=>{
 
         console.log(isFirstLoad);
-        
+        offTyping()
         const lastMessage = content[content.length - 1]
         if(isFirstLoad && !!content.length){
             if(firstUnreadElement){

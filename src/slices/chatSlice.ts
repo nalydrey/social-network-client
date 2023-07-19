@@ -50,13 +50,15 @@ import { socket } from "../App"
 
   export const addCreatedChat = createAsyncThunk(
     'chats/addCreatedChat',
-    ({chat}: {chat: ChatModel}, {dispatch} ) => {
+    ({chat, currentUserId}: {chat: ChatModel, currentUserId: string}, {dispatch} ) => {
       console.log('payload ');
       //Присоединить пользователя к чату
       socket.emit('joinToChat',{chatId: chat._id})
       //Добавить пользователям
       dispatch(addMyChat(chat._id))
       dispatch(addChat({usersIds: chat.users.map(user => user._id), chatId: chat._id}))
+      dispatch(deactivateChat(''))
+      chat.users = chat.users.filter(user => user._id !== currentUserId);
       chat.isActive = true
       return {chat}
     }
@@ -89,9 +91,16 @@ export const chatSlice = createSlice({
       })
     },
     deactivateChat: (state, action: PayloadAction<string>) => {
-      const activeChat = state.container.find((chat) => chat._id === action.payload)
-      if(activeChat){
-        activeChat.isActive = false
+      // const activeChat = state.container.find((chat) => chat._id === action.payload)
+      // if(activeChat){
+      //   activeChat.isActive = false
+      // }
+      state.container.forEach(chat => chat.isActive = false)
+    },
+    setTypingStatus: (state, action: PayloadAction<{chatId: string, status: boolean}>) => {
+      const chat = state.container.find(chat => chat._id === action.payload.chatId)
+      if(chat){
+        chat.isTyping = action.payload.status
       }
     },
 
@@ -156,5 +165,6 @@ export const {
   decreaseCounter,
   increaseCounter,
   chatUserConnect,
-  chatUserDisconnect
+  chatUserDisconnect,
+  setTypingStatus
 } = chatSlice.actions

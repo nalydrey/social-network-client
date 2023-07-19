@@ -1,18 +1,25 @@
-import { BaseSyntheticEvent, ChangeEvent, KeyboardEvent, SyntheticEvent } from 'react';
+import { useState, ChangeEvent, KeyboardEvent, SyntheticEvent, useRef } from 'react';
 import { useFormik } from 'formik'
 import { RoundButton } from '../../UI/RoundButton'
 import { PaperAirplaneIcon } from '@heroicons/react/24/solid'
 import * as Yup from 'yup'
+import { socket } from '../../../App';
 
 interface ChatFormProps {
+    onStartTyping: () => void
+    onFinishTyping: () => void
     onSubmit: (text: string) => void
 }
 
 
 export const ChatForm = ({
+    onStartTyping,
+    onFinishTyping,
     onSubmit
 }: ChatFormProps) => {
 
+    const [timer, setTimer] = useState<number>(0)
+    
     const formik = useFormik({
         initialValues:{
             message:''
@@ -26,6 +33,8 @@ export const ChatForm = ({
         }
     })
 
+    
+
     const handleChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
         if(e.target.scrollTop){
             const totalHeight = e.target.scrollTop + e.target.scrollHeight
@@ -34,14 +43,42 @@ export const ChatForm = ({
         formik.handleChange(e)
     }
 
+
     const handletTextarea = (e: KeyboardEvent<HTMLTextAreaElement>) => {
+        clearTimeout(timer)
+        let newTimer: number = timer
+        if(!timer){
+            console.log('tiping...');
+            onStartTyping()
+            newTimer = setTimeout(()=> {
+                console.log('off');
+                onFinishTyping()
+                clearTimeout(newTimer)
+                setTimer(0)
+            }, 2000)
+            setTimer(newTimer)
+        }
+        else{
+            newTimer = setTimeout(()=> {
+                console.log('off');
+                onFinishTyping()
+                clearTimeout(newTimer)
+                setTimer(0)
+            }, 2000)
+            setTimer(newTimer)
+        }
+
         const element = e.target as HTMLElement
         if(e.key === 'Enter'){
+            clearTimeout(newTimer)
+            setTimer(0)
             e.preventDefault()
             element.style.height = 40 + 'px'
             formik.handleSubmit()
         }
     }
+
+   
 
   return (
     <form 

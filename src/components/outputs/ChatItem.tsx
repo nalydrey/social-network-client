@@ -4,6 +4,7 @@ import { URL } from '../../http'
 
 interface ChatItemProps {
     src: string
+    isTyping: boolean
     isOnline: boolean
     counter: number
     onClick: (id: string)=>void
@@ -12,6 +13,7 @@ interface ChatItemProps {
 
 export const ChatItem = ({
     chatId,
+    isTyping,
     src,
     isOnline,
     counter,
@@ -19,7 +21,7 @@ export const ChatItem = ({
 }: ChatItemProps) => {
   return (
     <div 
-        className='relative mt-3'
+        className='relative mt-3 '
         onClick={() => onClick(chatId)}
     >
         <Avatar
@@ -35,6 +37,11 @@ export const ChatItem = ({
             !!counter &&
             <div className='px-1 min-w-[25px] flex items-center justify-center font-bold text-gray-300  rounded-full bg-red-500 absolute top-0 left-0 shadow-light -translate-y-1/2'>{counter}</div>
         }
+        {
+            isTyping &&
+            <div className='w-3 h-3 animate-ping bg-sky-500 rounded-full absolute top-0'/>
+        }
+
     </div>
   )
 }
