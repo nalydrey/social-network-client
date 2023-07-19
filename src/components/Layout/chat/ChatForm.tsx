@@ -27,17 +27,14 @@ export const ChatForm = ({
     })
 
     const handleChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
-        console.dir(e);
         if(e.target.scrollTop){
             const totalHeight = e.target.scrollTop + e.target.scrollHeight
             e.target.style.height = totalHeight + 'px'
         }
         formik.handleChange(e)
-        
     }
 
     const handletTextarea = (e: KeyboardEvent<HTMLTextAreaElement>) => {
-        console.dir(e);
         const element = e.target as HTMLElement
         if(e.key === 'Enter'){
             e.preventDefault()

@@ -81,12 +81,18 @@ export const chatSlice = createSlice({
       } 
     },
 
-    activateChat: (state, action: PayloadAction<ChatModel['_id']>) => {
+    activateChat: (state, action: PayloadAction<string>) => {
       state.container.forEach((chat) => {
         chat._id === action.payload
           ? (chat.isActive = true)
           : (chat.isActive = false)
       })
+    },
+    deactivateChat: (state, action: PayloadAction<string>) => {
+      const activeChat = state.container.find((chat) => chat._id === action.payload)
+      if(activeChat){
+        activeChat.isActive = false
+      }
     },
 
     chatUserConnect: (state, action: PayloadAction<{user: string}>) => {
@@ -102,7 +108,6 @@ export const chatSlice = createSlice({
         chat.users[0].isOnline = false
       }
     },
-
 
     disactivateChat: (state) => {
       state.container.forEach(chat => chat.isActive = false)
@@ -143,4 +148,13 @@ export const chatSlice = createSlice({
 
 export default chatSlice.reducer
 
-export const { activateChat, addMessageToChat, disactivateChat, decreaseCounter, increaseCounter, chatUserConnect, chatUserDisconnect } = chatSlice.actions
+export const { 
+  activateChat,
+  deactivateChat,
+  addMessageToChat,
+  disactivateChat,
+  decreaseCounter,
+  increaseCounter,
+  chatUserConnect,
+  chatUserDisconnect
+} = chatSlice.actions

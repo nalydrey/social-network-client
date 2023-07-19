@@ -9,7 +9,7 @@ import { URL } from '../../http'
 import { MessageModel} from '../../models/MessageModel'
 import { UserModel } from '../../models/UserModel'
 import { socket } from '../../App'
-import { Chat, decreaseCounter, activateChat } from '../../slices/chatSlice'
+import { Chat, decreaseCounter, activateChat, deactivateChat } from '../../slices/chatSlice'
 import { createTempMessage, getMessages } from '../../slices/messagesSlice'
 import { ChatHeader } from '../Layout/chat/ChatHeader'
 import { nanoid } from '@reduxjs/toolkit'
@@ -27,7 +27,6 @@ export const ChatBar = () => {
     const chats = useAppSelector<ChatModel[]>(state => state.chats.container)
     const activeChat = chats.find(chat => chat.isActive)
     const messages = useAppSelector<MessageModel[]>(state => state.messages.container)
-    const messagesLoading = useAppSelector<boolean>(state => state.messages.isLoading)
     const currentUser = useAppSelector<UserModel>(state => state.currentUser.user)
 
     const [isOpen, setIsOpen] = useState<boolean>(false)
@@ -37,7 +36,7 @@ export const ChatBar = () => {
         if(activeChat){
             setIsOpen(true)
         }
-    },[activeChat])
+    },[activeChat?._id])
   
     useEffect (()=>{
         if(activeChat){
@@ -58,13 +57,20 @@ export const ChatBar = () => {
         socket.emit('deleteMessage', {messageId, chatId})
      }
 
-    const handlerOnDeleteChat = (chatId: string) => {
-        socket.emit('deleteChat', {chatId})
+    const handlerOnDeleteChat = () => {
+        if(activeChat){
+            socket.emit('deleteChat', {chatId: activeChat._id})
+        }
+    }
+    
+    const handlerHideChat = () => {
+        if(activeChat){
+            dispatch(deactivateChat(activeChat._id))
+        }
     }
 
     const handleOpenChat = (chatId: string) => {
         dispatch(activateChat(chatId))
-        dispatch(getMessages({chat: chatId}))
     }
 
     const handleOpen = () => {
@@ -116,6 +122,8 @@ export const ChatBar = () => {
                             chatName={activeChatUser.private.firstName + ' ' + activeChatUser.private.lastName}
                             isOnline = {activeChatUser.isOnline}
                             avatar = {activeChatUser.private.avatar ? URL + activeChatUser.private.avatar : ''}
+                            onHide={handlerHideChat}
+                            onDelete={handlerOnDeleteChat}
                        />
                        
                        <ChatContent

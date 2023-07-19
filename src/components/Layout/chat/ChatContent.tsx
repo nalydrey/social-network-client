@@ -1,4 +1,4 @@
-import {useRef, useEffect, useState, useMemo} from 'react'
+import {useRef, useEffect} from 'react'
 import { Message } from '../../outputs/Message'
 import { UserModel } from '../../../models/UserModel'
 import moment from 'moment'
@@ -8,6 +8,8 @@ import { URL } from '../../../http'
 import { RoundButton } from '../../UI/RoundButton'
 import { ChevronDownIcon } from '@heroicons/react/24/solid'
 import { CountLabel } from '../../outputs/CountLabel'
+import { useAppDispatch, useAppSelector } from '../../../hooks/hooks'
+import { turnOffFirstLoad } from '../../../slices/messagesSlice'
 
 interface ChatContentProps {
     messageCounter: number
@@ -26,24 +28,28 @@ export const ChatContent = ({
     onVisible
 }:ChatContentProps) => {
     
+
     let firstUnreadElement: HTMLLIElement | null = null
+    const isFirstLoad = useAppSelector<boolean>(state => state.messages.isFirstLoad)
+    const dispatch = useAppDispatch()
     const messageContainer = useRef<HTMLDivElement>(null)
     const button = useRef<HTMLDivElement>(null)
-    const [firstEnter, setFirstEnter] = useState(true)
-   
 
     useEffect (()=>{
+
+        console.log(isFirstLoad);
+        
         const lastMessage = content[content.length - 1]
-        if(firstEnter && !!content.length){
+        if(isFirstLoad && !!content.length){
             if(firstUnreadElement){
                 firstUnreadElement.scrollIntoView({behavior: 'instant', block: 'end'})
             }
             if(!firstUnreadElement){
                 toBottom('instant')
             }
-            setFirstEnter(false)
+            dispatch(turnOffFirstLoad())
         }
-        if(lastMessage && messageContainer.current && !firstEnter){
+        else if(lastMessage && messageContainer.current && !isFirstLoad){
             const isEnd = messageContainer.current.scrollHeight - messageContainer.current.scrollTop <=591
             const isMyLast = lastMessage.user._id === currentUserId
             if(isEnd || isMyLast){

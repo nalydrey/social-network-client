@@ -11,10 +11,12 @@ import {  decreaseCounter, increaseCounter } from "./chatSlice"
 
 interface MessageSliceModel extends Slice<MessageModel> {
   isSending: boolean
+  isFirstLoad: boolean
 }
 
 const initialState: MessageSliceModel = {
   container: [],
+  isFirstLoad: false,
   isLoading: false,
   isSending: false
 }
@@ -56,6 +58,9 @@ export const messagesSlice = createSlice({
   name: "messages",
   initialState,
   reducers: {
+    turnOffFirstLoad: (state) => {
+      state.isFirstLoad = false
+    },
     createTempMessage: (state, action: PayloadAction<MessageModel>) => {
       state.container.push(action.payload)
     },
@@ -96,6 +101,7 @@ export const messagesSlice = createSlice({
       .addCase(getMessages.fulfilled, (state, action) => {
         state.container = action.payload
         state.isLoading = false
+        state.isFirstLoad = true
       })
       .addCase(deleteMessage.fulfilled, (state, action) => {
         state.container = state.container.filter(message => message._id !== action.payload.messageId)
@@ -109,5 +115,6 @@ export default messagesSlice.reducer
 export const {
   resetMessages,
   createTempMessage,
-  readMessage
+  readMessage,
+  turnOffFirstLoad
 } = messagesSlice.actions

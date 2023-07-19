@@ -1,16 +1,31 @@
+import { useState } from "react";
+import { EllipsisHorizontalIcon } from '@heroicons/react/24/solid'
 import { Avatar } from '../../UI/Avatar'
+import { Tooltip } from '../../UI/Tooltip'
+import { MenuItem } from '../../UI/MenuItem'
 
 interface ChatHeaderProps {
     avatar: string
     isOnline: boolean
     chatName: string
+    onHide: () => void
+    onDelete: () => void
 }
 
 export const ChatHeader = ({
+    onHide,
+    onDelete,
     avatar,
     isOnline,
     chatName
 }: ChatHeaderProps) => {
+
+    const [isOpen, setOpen] = useState(false)
+
+    const handleOpen = () => {
+        setOpen(!isOpen)
+    }
+
   return (
     <div className='flex py-1 px-5 items-center border-b-4 border-sky-800'>
         <div className='relative mb-1'>
@@ -26,6 +41,30 @@ export const ChatHeader = ({
         <p className='grow text-center text-2xl font-bold text-sky-700'>
             {chatName}
         </p>
+        <div className="relative">
+                        <button className=""
+                            onClick={handleOpen}
+                        >
+                            <EllipsisHorizontalIcon className="h-5"/>
+                        </button>
+                        <Tooltip 
+                            className='right-0 top-[110%]'
+                            isOpen={isOpen}  
+                    >
+                        <ul>
+                            <MenuItem
+                                itemName="hide"
+                                itemText={'Hide'}
+                                onChange={onHide}
+                            />              
+                            <MenuItem
+                                itemName="delete"
+                                itemText={'Delete'}
+                                onChange={onDelete}
+                            />              
+                        </ul>
+                        </Tooltip>
+                    </div>
     </div>
   )
 }
