@@ -4,6 +4,7 @@ import { FriendPreview } from '../outputs/FriendPreview'
 import { MenuItem } from '../UI/MenuItem'
 import { useAppSelector } from '../../hooks/hooks'
 import { UserModel } from '../../models/UserModel'
+import { URL } from '../../http'
 
 interface SuggestationBoxProps {
     onWriteMessage: (id: string) => void 
@@ -36,8 +37,8 @@ return (
                 {suggestations.map(user => (
                     <FriendPreview
                         key={user._id}
-                        avatar={user.private.avatar}
-                        picture={user.picture}
+                        avatar={user.private.avatar && URL + user.private.avatar}
+                        picture={user.picture && URL + user.picture}
                         title={`${user.private.firstName} ${user.private.lastName}`}
                     >
                         <ul>

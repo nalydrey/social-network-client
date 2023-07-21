@@ -11,6 +11,7 @@ import { changeMyAvatar, changeMyPicture } from '../../slices/currentUserSlice'
 import { matchedValueInArr } from '../../customFunctions/isCoincidenceInArr'
 import { socket } from '../../App'
 import { useStateController } from '../../hooks/useStateController'
+import { SocketEmmits } from '../../enums/SocketEnums'
 
 export const MainUser = () => {
 
@@ -81,24 +82,24 @@ export const MainUser = () => {
     
     const handlerDeleteFromFriends = (userId:string) => {
       removeFromFriend({userId})
-      socket.emit('deleteFriend', {friendId: userId})
+      socket.emit<SocketEmmits>(SocketEmmits.DELETE_FRIEND, {friendId: userId})
     }
     
     const handlerCancelSuggestation = (userId:string) => {
       if( currentUser && currentUser.myRequests.includes(userId) ) {
         removeFromSuggestation({userId})
-        socket.emit('cancelSuggestation', {friendId: userId})
+        socket.emit<SocketEmmits>(SocketEmmits.CANCEL_SUGGESTATION, {friendId: userId})
       }
     }
     
     const handlerReject = (userId:string) => {
       removeFromInvitation({userId})
-      socket.emit('rejectInvitation', {friendId:userId})
+      socket.emit<SocketEmmits>(SocketEmmits.REJECT_INVITATION, {friendId:userId})
     }
     
     const handlerAccept = (user:UserModel) => {
       moveToFriend({user})
-      socket.emit('acceptInvitation', {friendId: user._id})
+      socket.emit<SocketEmmits>(SocketEmmits.ACCEPT_INVITATION, {friendId: user._id})
     }
     
 

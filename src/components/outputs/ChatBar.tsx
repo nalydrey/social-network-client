@@ -15,6 +15,7 @@ import { ChatHeader } from '../Layout/chat/ChatHeader'
 import { nanoid } from '@reduxjs/toolkit'
 import { ChatForm } from '../Layout/chat/ChatForm'
 import { ChatContent } from '../Layout/chat/ChatContent'
+import { SocketEmmits } from '../../enums/SocketEnums'
 
 
 
@@ -49,18 +50,18 @@ export const ChatBar = () => {
 
     const handlerOnVisible = (messageId: string, messageUser: string, isRead: boolean, chatId: string) => {
         if(currentUser && currentUser._id !== messageUser && !isRead){
-            socket.emit('readMessage', {messageId, chatId})
+            socket.emit<SocketEmmits>(SocketEmmits.READ_MESSAGE, {messageId, chatId})
             dispatch(decreaseCounter({chatId}))
         }
     }
 
     const handlerDeleteMessage = (messageId: string, chatId: string) => {
-        socket.emit('deleteMessage', {messageId, chatId})
+        socket.emit<SocketEmmits>(SocketEmmits.DELETE_MESSAGE, {messageId, chatId})
      }
 
     const handlerOnDeleteChat = () => {
         if(activeChat){
-            socket.emit('deleteChat', {chatId: activeChat._id})
+            socket.emit<SocketEmmits>(SocketEmmits.DELETE_CHAT, {chatId: activeChat._id})
         }
     }
     
@@ -71,7 +72,13 @@ export const ChatBar = () => {
     }
 
     const handleOpenChat = (chatId: string) => {
-        dispatch(activateChat(chatId))
+        if(activeChat?._id === chatId){
+            dispatch(deactivateChat(chatId))
+        }
+        else{
+            dispatch(activateChat(chatId))
+        }
+
     }
 
     const handleOpen = () => {
@@ -95,7 +102,7 @@ export const ChatBar = () => {
                 updatedAt: date,
             }))
 
-            socket.emit('sendMessage', {
+            socket.emit<SocketEmmits>(SocketEmmits.SEND_MESSAGE, {
                 createdId,
                 user: currentUser._id, 
                 chat: activeChat._id, 
@@ -107,13 +114,13 @@ export const ChatBar = () => {
 
     const headerStartTyping = () => {
         if(activeChat){
-            socket.emit('startTyping', {chatId: activeChat._id})
+            socket.emit<SocketEmmits>(SocketEmmits.START_TYPING, {chatId: activeChat._id})
         }
     }
 
     const headerFinishTyping = () => {
         if(activeChat){
-            socket.emit('endTyping',  {chatId: activeChat._id})
+            socket.emit<SocketEmmits>(SocketEmmits.END_TYPING,  {chatId: activeChat._id})
         }
     }
 
@@ -139,6 +146,7 @@ export const ChatBar = () => {
                        />
                        
                        <ChatContent
+                            isOpen = {isOpen}
                             messageCounter = {messageCounter}
                             currentUserId={currentUser._id}
                             content={messages}
@@ -156,13 +164,14 @@ export const ChatBar = () => {
                     </ContentBox>
                 </div>
             }
-            <ul className={`flex flex-col gap-3 duration-300 absolute right-0 bg-orange-200 rounded-xl p-2 ${isOpen? 'scale-1' : 'scale-0'}`}>
+            <ul className={`flex flex-col h-full gap-3 duration-300 absolute right-0 bg-orange-200 rounded-xl p-2 ${isOpen? 'scale-1' : 'scale-0'}`}>
                 {
                     !!chats.length ?
                     chats.map(chat => (
                         <ChatItem 
                             key ={chat._id}
                             chatId={chat._id}
+                            isActive = {activeChat?._id === chat._id}
                             isTyping = {chat.isTyping}
                             src={chat.users[0].private.avatar}
                             isOnline ={chat.users[0].isOnline}
@@ -175,7 +184,6 @@ export const ChatBar = () => {
                     <li key={i} className='font-bold text-3xl text-sky-700 px-5'>{word}</li>
                     ))
                 }
-
             </ul>
         </div>
         <div className='flex justify-center items-center'>

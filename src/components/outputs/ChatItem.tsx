@@ -4,6 +4,7 @@ import { URL } from '../../http'
 
 interface ChatItemProps {
     src: string
+    isActive: boolean
     isTyping: boolean
     isOnline: boolean
     counter: number
@@ -13,15 +14,16 @@ interface ChatItemProps {
 
 export const ChatItem = ({
     chatId,
+    isActive,
     isTyping,
-    src,
     isOnline,
+    src,
     counter,
     onClick
 }: ChatItemProps) => {
   return (
     <div 
-        className='relative mt-3 '
+        className={`relative mt-3 duration-300 ${isActive ? 'bg-sky-400/20': ''} rounded-md p-1`}
         onClick={() => onClick(chatId)}
     >
         <Avatar
@@ -39,7 +41,7 @@ export const ChatItem = ({
         }
         {
             isTyping &&
-            <div className='w-3 h-3 animate-ping bg-sky-500 rounded-full absolute top-0'/>
+            <div className='w-3 h-3 animate-ping bg-sky-500 rounded-full absolute bottom-0 right-0'/>
         }
 
     </div>

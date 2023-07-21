@@ -18,10 +18,12 @@ import { MainUser } from './components/pages/MainUser'
 import { Home } from './components/pages/Home'
 import { Login } from './components/Forms/Login'
 import { RegisterPage } from './components/pages/RegisterPage'
+import { RoutePath } from './enums/RouteEnums'
+import { LocalStorageNames } from './enums/LocalStorageEnums'
 
 
 export const socket = io(URL, {auth:{
-  user: localStorage.getItem('currentUser')
+  user: localStorage.getItem(LocalStorageNames.CURRENT_USER)
 }})
 
 function App() {
@@ -38,10 +40,10 @@ function App() {
 
 
   useEffect(()=>{
-    const userId = localStorage.getItem('currentUser')
+    const userId = localStorage.getItem(LocalStorageNames.CURRENT_USER)
     if(userId){
       dispatch(enter(userId)) 
-      navigate('/user')
+      navigate(RoutePath.USER)
     } 
     dispatch(getUsers({})) 
   },[])
@@ -55,36 +57,21 @@ function App() {
     return () => {unsubscribe()}
   },[currentUserId])
 
-
   return (
     <>
       <Routes>
-        <Route path='/' element={<Layout/>}>
+        <Route path={RoutePath.HOME} element={<Layout/>}>
           <Route index element = {<Home/>}/>
-          <Route path='/user' element = {<MainUser/>}>
+          <Route path={RoutePath.HOME+RoutePath.USER} element = {<MainUser/>}>
             <Route index element={<Users/>}/>
-            <Route path='profile' element={<Profile />}/>
-            <Route path="myposts" element={<MyPosts />} />
-            <Route path="posts" element={<Posts />} />
+            <Route path={RoutePath.PROFILE} element={<Profile />}/>
+            <Route path={RoutePath.MY_POSTS} element={<MyPosts />} />
+            <Route path={RoutePath.POSTS} element={<Posts />} />
           </Route>
-          <Route path='register' element={<RegisterPage/>}/>
-          <Route path='login' element={<Login/>}/>
+          <Route path={RoutePath.REGISTER} element={<RegisterPage/>}/>
+          <Route path={RoutePath.LOGIN} element={<Login/>}/>
         </Route>
       </Routes>
-
-    {/* <Modal isActive = {isRegisterActive}>
-      <RegisterForm onCancel={closeRegisterForm}/>
-    </Modal> */}
-
-                    {/* <Routes> */}
-                        
-                        {/* <Route path='users' element={<Users />}/> */}
-                       
-                    {/* </Routes>  */}
-
-
-
-     
     </>
   )
 }

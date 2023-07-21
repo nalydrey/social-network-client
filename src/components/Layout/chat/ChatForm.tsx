@@ -71,6 +71,7 @@ export const ChatForm = ({
         const element = e.target as HTMLElement
         if(e.key === 'Enter'){
             clearTimeout(newTimer)
+            onFinishTyping()
             setTimer(0)
             e.preventDefault()
             element.style.height = 40 + 'px'

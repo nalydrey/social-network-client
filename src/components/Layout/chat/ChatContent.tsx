@@ -13,6 +13,7 @@ import { turnOffFirstLoad } from '../../../slices/messagesSlice'
 import { setTypingStatus } from '../../../slices/chatSlice'
 
 interface ChatContentProps {
+    isOpen: boolean
     messageCounter: number
     currentUserId: string
     content: MessageModel[]
@@ -23,6 +24,7 @@ interface ChatContentProps {
 }
 
 export const ChatContent = ({
+    isOpen,
     messageCounter,
     content,
     currentUserId,
@@ -39,7 +41,6 @@ export const ChatContent = ({
     const button = useRef<HTMLDivElement>(null)
 
     useEffect (()=>{
-
         console.log(isFirstLoad);
         offTyping()
         const lastMessage = content[content.length - 1]
@@ -55,7 +56,7 @@ export const ChatContent = ({
         else if(lastMessage && messageContainer.current && !isFirstLoad){
             const isEnd = messageContainer.current.scrollHeight - messageContainer.current.scrollTop <=591
             const isMyLast = lastMessage.user._id === currentUserId
-            if(isEnd || isMyLast){
+            if(isOpen && (isEnd || isMyLast)){
                 toBottom('smooth')
             }
         }

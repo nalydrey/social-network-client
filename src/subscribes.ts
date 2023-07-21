@@ -6,6 +6,7 @@ import type { AppDispatch } from "./store/store"
 import type { MessageModel } from "./models/MessageModel"
 import type { UserModel } from "./models/UserModel"
 import { StateControllerReturn } from "./hooks/useStateController"
+import { SocketEmmits, SocketEvents } from "./enums/SocketEnums"
 
 type SubscribesFunc = (dispatch: AppDispatch, currentUser: UserModel, controller: StateControllerReturn ) => void 
 
@@ -20,60 +21,60 @@ export const subscribes: SubscribesFunc = (dispatch, currentUser, controller) =>
         removeFromFriend
         } = controller
 
-    socket.emit('enterUser', {userId: currentUser._id})
-    socket.emit('connectChats', {chats: currentUser.chats})
+    socket.emit<SocketEmmits>(SocketEmmits.ENTER_USER, {userId: currentUser._id})
+    socket.emit<SocketEmmits>( SocketEmmits.CONNECT_CHATS, {chats: currentUser.chats})
 
-    socket.on('userConnected', (data) => {
+    socket.on<SocketEvents>(SocketEvents.USER_CONNECTED, (data) => {
         dispatch(connectUser({userId: data.user }))
         dispatch(chatUserConnect({user: data.user}))
 
     })
-    socket.on('userDisconnected', (data) => {
+    socket.on<SocketEvents>(SocketEvents.USER_DISCONNECTED, (data) => {
         dispatch(disconnectUser({userId: data.user}))
         dispatch(chatUserDisconnect({user: data.user}))
     })
-    socket.on('messageIsCreated', (data: MessageModel) => {
+    socket.on<SocketEvents>(SocketEvents.MESSAGE_IS_CREATED, (data: MessageModel) => {
         dispatch(createMessage(data))
     })
-    socket.on('chatIsCreated', (data) => {
+    socket.on<SocketEvents>(SocketEvents.CHAT_IS_CREATED, (data) => {
         console.log(data);
         
         dispatch(addCreatedChat({...data, currentUserId: currentUser._id}))
     })
-    socket.on('messageIsRead', (data) => {
+    socket.on<SocketEvents>(SocketEvents.MESSAGE_IS_READ, (data) => {
         dispatch(readMessage({messageId: data}))
     })
-    socket.on('messageIsDeleted', (message: MessageModel)=>{
+    socket.on<SocketEvents>(SocketEvents.MESSAGE_IS_DELETED, (message: MessageModel)=>{
         dispatch(deleteMessage({message, currentUserId: currentUser._id}))
     })
-    socket.on('chatIsDeleted', (chatId: string)=>{
+    socket.on<SocketEvents>(SocketEvents.CHAT_IS_DELETED, (chatId: string)=>{
         dispatch(deleteChat(chatId))
     })
-    socket.on('typingStarted', (chatId: string)=>{
+    socket.on<SocketEvents>(SocketEvents.TYPING_STARTED, (chatId: string)=>{
         dispatch(setTypingStatus({chatId, status: true}))
     })
-    socket.on('typingFinished', (chatId: string)=>{
+    socket.on<SocketEvents>(SocketEvents.TYPING_FINISHED, (chatId: string)=>{
         dispatch(setTypingStatus({chatId, status: false}))
         
     })
 
 
-    socket.on('userIsInvited', moveToInvitation)
-    socket.on('suggestationIsCanceled', removeFromInvitation)
-    socket.on('invitationIsRejected', removeFromSuggestation)
-    socket.on('invitationIsAccepted', moveToFriend)
-    socket.on('friendIsDeleted', removeFromFriend)
+    socket.on<SocketEvents>(SocketEvents.USER_IS_INVITED, moveToInvitation)
+    socket.on<SocketEvents>(SocketEvents.SUGGESTATION_IS_CANCELED, removeFromInvitation)
+    socket.on<SocketEvents>(SocketEvents.INVITATION_IS_REJECTED, removeFromSuggestation)
+    socket.on<SocketEvents>(SocketEvents.INVITATION_IS_ACCEPTED, moveToFriend)
+    socket.on<SocketEvents>(SocketEvents.FRIEND_IS_DELETED, removeFromFriend)
 
 
 }
 
 export const unsubscribe = () => {
 
-    socket.off('userConnected')
-    socket.off('userDisconnected')
-    socket.off('messageIsCreated')
-    socket.off('chatIsCreated')
-    socket.off('messageIsRead')
-    socket.off('messageIsDeleted')
-    socket.off('chatIsDeleted')
+    socket.off<SocketEvents>(SocketEvents.USER_CONNECTED)
+    socket.off<SocketEvents>(SocketEvents.USER_DISCONNECTED)
+    socket.off<SocketEvents>(SocketEvents.MESSAGE_IS_CREATED)
+    socket.off<SocketEvents>(SocketEvents.CHAT_IS_CREATED)
+    socket.off<SocketEvents>(SocketEvents.MESSAGE_IS_READ)
+    socket.off<SocketEvents>(SocketEvents.MESSAGE_IS_DELETED)
+    socket.off<SocketEvents>(SocketEvents.CHAT_IS_DELETED)
 }

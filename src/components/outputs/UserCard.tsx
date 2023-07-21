@@ -1,6 +1,4 @@
-import React, {ReactNode} from 'react'
-import defaultFoto from '../../assets/defaultAva.png'
-import { URL } from '../../http'
+import {ReactNode} from 'react'
 import { PhotoIcon,  UsersIcon} from '@heroicons/react/24/solid'
 import { Score } from '../UI/Score'
 import { ImageWithPreloader } from '../UI/ImageWithPreloader'
@@ -32,17 +30,18 @@ export const UserCard = ({
 
     const iconSizeClass = 'w-8 h-8'
 
-
   return (
     <li className='max-w-[250px] w-full rounded-lg shadow-light flex flex-col grow'>
         <div className='relative rounded-t-lg h-[110px] bg-green-300 bg-center bg-cover bg-no-repeat'
-            //  style={{backgroundImage: `url(${picture ?  URL+'/'+ picture : ''})`}}   
         >
-            <ImageWithPreloader className='img absolute rounded-t-lg' src={picture ? URL+picture : ''} alt="foto"/>
+            {
+                picture &&
+                <ImageWithPreloader className='img absolute rounded-t-lg' src={picture} alt="foto"/>
+            }
             <Avatar
                 className='border-4 border-slate-200 shadow-light absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2'
                 classSize='w-32 h-32'
-                src = {avatar && URL+'/'+avatar}
+                src ={avatar}
             />
            { 
             isOnline &&

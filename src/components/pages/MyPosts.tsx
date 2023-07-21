@@ -1,6 +1,4 @@
-import React, { useState, useEffect } from 'react'
-import { CameraIcon } from '@heroicons/react/24/solid'
-import { DeleteButton } from '../UI/DeleteButton'
+import { useState, useEffect } from 'react'
 import { useFormik } from 'formik'
 import * as Yup from 'yup'
 import { useAppDispatch, useAppSelector } from '../../hooks/hooks'
@@ -8,10 +6,10 @@ import { createPost, deletePost, getMyPosts, setLike } from '../../slices/postSl
 import { Post } from '../outputs/Post'
 import { PostModel } from '../../models/PostModel'
 import { UserModel } from '../../models/UserModel'
-import { SimpleSlider } from '../UI/SimpleSlider'
 import { MappingBox } from '../UI/MappingBox'
 import { NewPostForm } from '../UI/NewPostForm'
 import { ContentBox } from '../UI/ContentBox'
+import { FormDataNames } from '../../enums/FormDataEnums'
 
 
 export const MyPosts = () => {
@@ -37,12 +35,11 @@ export const MyPosts = () => {
             if(currentUser){
                 const form = new FormData()
                 if(images){
-                    Array.from(images).forEach((img, i)=> form.append(`image${i}`, img))
-                    // form.append('images', images[0])
+                    Array.from(images).forEach((img, i)=> form.append(`${FormDataNames.IMAGE}${i}`, img))
                 }
-                form.append('name', values.name)
-                form.append('discription', values.discription)
-                form.append('user', currentUser._id)
+                form.append(FormDataNames.NAME, values.name)
+                form.append(FormDataNames.DISCRIPTION, values.discription)
+                form.append(FormDataNames.USER, currentUser._id)
                 dispatch(createPost(form))
             }
         }

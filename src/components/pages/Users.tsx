@@ -15,6 +15,9 @@ import { UserCardSkeleton } from "../Preloaders/UserCardSkeleton"
 import { socket } from "../../App"
 import { useStateController } from "../../hooks/useStateController"
 import { activateChat } from "../../slices/chatSlice"
+import { URL } from "../../http"
+import { SocketEmmits } from "../../enums/SocketEnums"
+import { LocalStorageNames } from "../../enums/LocalStorageEnums"
 
 
 
@@ -58,16 +61,16 @@ export const Users = () => {
                     dispatch(activateChat(matchedChat))
                 } 
                 else {
-                    socket.emit('createNewChat', {userReceiver: userId})
+                    socket.emit<SocketEmmits>(SocketEmmits.CREATE_NEW_CHAT, {userReceiver: userId})
                 }
             }
         }
     }
 
     const handlerEnter = (id:string) => {
-        currentUser && socket.emit('quitUser')
+        currentUser && socket.emit<SocketEmmits>(SocketEmmits.QUIT_USER)
         dispatch(enter(id)); 
-        localStorage.setItem("currentUser", id)
+        localStorage.setItem(LocalStorageNames.CURRENT_USER, id)
     }
   
     const handlerDelete = (id:string) => {
@@ -77,33 +80,33 @@ export const Users = () => {
     const handlerAddToFriends = (user: UserModel) => {
         if(currentUser && !currentUser.myRequests.includes(user._id)) {
             moveToSuggestation({user})
-            socket.emit('newInvitation', {friendId: user._id})
+            socket.emit<SocketEmmits>(SocketEmmits.NEW_INVITATION, {friendId: user._id})
         }
     }
 
     const handlerCancelSuggestation = (userId:string) => {
         if (currentUser && currentUser.myRequests.includes(userId)) {
             removeFromSuggestation({userId})
-            socket.emit('cancelSuggestation', {friendId: userId})
+            socket.emit<SocketEmmits>(SocketEmmits.CANCEL_SUGGESTATION, {friendId: userId})
         }
         
     }
   
     const handlerReject = (userId:string) => {
         removeFromInvitation({userId})
-        socket.emit('rejectInvitation', {friendId:userId})
+        socket.emit<SocketEmmits>(SocketEmmits.REJECT_INVITATION, {friendId:userId})
     }
     
     
     const handlerAccept = (user:UserModel) => {
         moveToFriend({user})
-        socket.emit('acceptInvitation', {friendId: user._id})
+        socket.emit<SocketEmmits>(SocketEmmits.ACCEPT_INVITATION, {friendId: user._id})
 
     }
   
     const handlerDeleteFromFriends = (userId:string) => {
         removeFromFriend({userId})
-        socket.emit('deleteFriend', {friendId: userId})
+        socket.emit<SocketEmmits>(SocketEmmits.DELETE_FRIEND, {friendId: userId})
     }
 
 
@@ -121,6 +124,8 @@ export const Users = () => {
             <ul className='grid justify-center justify-items-center sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4  gap-5 '>
                 {
                     users.map(user => {
+                        const {_id, isOnline, picture, friends, posts} = user
+                        const {avatar, firstName, lastName} = user.private
                         const isI = currentUser?._id === user._id 
                         const isMyRequest = (currentUser?.myRequests.includes(user._id))
                         const isMyFriend = currentUser?.friends.includes(user._id)
@@ -128,15 +133,15 @@ export const Users = () => {
                         const iconSizeClass = 'w-6 h-6'
                         return (
                             <UserCard 
-                                key={user._id}
-                                isOnline={user.isOnline}
-                                id={user._id}
-                                avatar={user.private.avatar}
-                                picture={user.picture}
-                                friendCounter={user.friends.length}
-                                postCounter={user.posts.length}
-                                firstName={user.private.firstName}
-                                lastName={user.private.lastName}
+                                key={_id}
+                                id={_id}
+                                isOnline={isOnline}
+                                avatar={avatar && URL + avatar}
+                                picture={picture && URL + picture}
+                                lastName={lastName}
+                                firstName={firstName}
+                                friendCounter={friends.length}
+                                postCounter={posts.length}
                             >
                                 {
                                     !isI &&

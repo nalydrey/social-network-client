@@ -1,8 +1,6 @@
 import { CameraIcon, PhotoIcon } from '@heroicons/react/24/solid'
-import React, {ChangeEvent} from 'react'
-import defaultFoto from '../../assets/defaultAva.png'
+import {ChangeEvent} from 'react'
 import { URL } from '../../http'
-import { RoundButton } from '../UI/RoundButton'
 import { ButtonUnderline } from '../UI/ButtonUnderline'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { ImageWithPreloader } from '../UI/ImageWithPreloader'
@@ -10,6 +8,7 @@ import { DotsPreloader } from '../Preloaders/DotsPreloader'
 import { Avatar } from '../UI/Avatar'
 import { useAppSelector } from '../../hooks/hooks'
 import { UserModel } from '../../models/UserModel'
+import { RoutePath } from '../../enums/RouteEnums'
 
 interface TopBoxProps {
     onChangeAvatar: (e: ChangeEvent<HTMLInputElement>)=>void
@@ -24,7 +23,7 @@ export const TopBox = ({
     messageCounter,
 }:TopBoxProps) => {
 
-    const host = URL + '/'
+    const host = URL + RoutePath.HOME
 
     const currentUser = useAppSelector<UserModel | null>(state => state.currentUser.user)
 
@@ -47,9 +46,7 @@ export const TopBox = ({
   return (
     <div className='box mb-4 mx-1 overflow-hidden'>
 
-        <div className='relative pt-[30%] sm:pt-[20%] bg-indigo-400 w-full bg-cover bg-center bg-no-repeat'
-            //  style={style}   
-        >
+        <div className='relative pt-[30%] sm:pt-[20%] bg-indigo-400 w-full bg-cover bg-center bg-no-repeat'>
             <ImageWithPreloader 
                 className=' absolute top-0' 
                 src={picture} 
@@ -99,18 +96,18 @@ export const TopBox = ({
             <div className=' flex justify-center gap-5'>
                 <ButtonUnderline
                     title='People'
-                    isActive={location.pathname === '/user'}
-                    onClick={()=>{navigate('/user')}}
+                    isActive={location.pathname === RoutePath.HOME+RoutePath.USER}
+                    onClick={()=>{navigate(RoutePath.HOME+RoutePath.USER)}}
                 />
                 <ButtonUnderline
                     title='My Posts'
-                    isActive={location.pathname === '/myposts'}
-                    onClick={()=>{navigate('myposts')}}
+                    isActive={location.pathname === RoutePath.HOME+RoutePath.MY_POSTS}
+                    onClick={()=>{navigate(RoutePath.MY_POSTS)}}
                 />
                 <ButtonUnderline
                     title='All Posts'
-                    isActive={location.pathname === '/posts'}
-                    onClick={()=>{navigate('posts')}}
+                    isActive={location.pathname === RoutePath.HOME + RoutePath.POSTS}
+                    onClick={()=>{navigate(RoutePath.POSTS)}}
                 />
             </div>    
         </div>

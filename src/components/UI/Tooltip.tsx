@@ -12,7 +12,7 @@ export const Tooltip = ({
     className
 }: TooltipProps) => {
   return (
-    <div className={`${className} z-10 absolute transition-all min-w-[170px] shadow-light bg-white duration-500 rounded-lg
+    <div className={`${className} z-20 absolute transition-all min-w-[170px] shadow-light bg-white duration-500 rounded-lg
                      ${ isOpen ?  'opacity-100 visible' : 'opacity-0 invisible'}`}
     >
         {children}
