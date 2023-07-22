@@ -1,27 +1,10 @@
-# vite-template-redux
+# Social Network 
 
-Uses [Vite](https://vitejs.dev/), [Vitest](https://vitest.dev/), and [React Testing Library](https://github.com/testing-library/react-testing-library) to create a modern [React](https://react.dev/) app compatible with [Create React App](https://create-react-app.dev/)
+## Simple App created with Node.js, Express server in connection with MongoDB
+## For the client side: TypeScript React-Vite App
 
-```sh
-npx degit reduxjs/redux-templates/packages/vite-template-redux my-app
-```
+### See below some pictures of App
 
-## Goals
-
-- Easy migration from Create React App or Vite
-- As beginner friendly as Create React App
-- Optimized performance compared to Create React App
-- Customizable without ejecting
-
-## Scripts
-
-- `dev`/`start` - start dev server and open browser
-- `build` - build for production
-- `preview` - locally preview production build
-- `test` - launch test runner
-
-## Inspiration
-
-- [Create React App](https://github.com/facebook/create-react-app/tree/main/packages/cra-template)
-- [Vite](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react)
-- [Vitest](https://github.com/vitest-dev/vitest/tree/main/examples/react-testing-lib)
+<img src="./src//assets//main.png">
+<img src="./src//assets//posts.png">
+<img src="./src//assets//people.png">
