@@ -1,3 +1,4 @@
 export enum LocalStorageNames {
-    CURRENT_USER = 'currentUser'
+    CURRENT_USER = 'currentUser',
+    TOKEN = 'token'
 }

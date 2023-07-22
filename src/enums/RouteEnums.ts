@@ -4,7 +4,7 @@ export enum RoutePath {
     PROFILE = 'profile',
     MY_POSTS ='myposts',
     POSTS = 'posts',
-    REGISTER = 'register',
-    LOGIN = 'login'
+    REGISTER = '/register',
+    LOGIN = '/login'
 
 }

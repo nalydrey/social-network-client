@@ -13,7 +13,7 @@ export const Modal = ({
 }: ModalProps) => {
   return (
     <div 
-        className={`absolute top-0 left-0 w-screen h-screen bg-black/80 justify-center items-center  ${isActive ? 'flex':'hidden'}`}
+        className={`absolute top-0 z-50 left-0 w-screen h-screen bg-black/80 justify-center items-center  ${isActive ? 'flex':'hidden'}`}
         onClick = {()=>{onEmptySpace()}} 
     >
         <div className=''

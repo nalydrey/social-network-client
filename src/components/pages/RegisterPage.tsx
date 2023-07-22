@@ -1,17 +1,37 @@
-import React from 'react'
+import {useEffect} from 'react'
 import { Center } from '../UI/Center'
-import { ContentBox } from '../UI/ContentBox'
-import { Register } from '../Forms/Register'
-import { Link } from 'react-router-dom'
+import { Register, RegisterFormNames } from '../Forms/Register'
+import { Link, useNavigate } from 'react-router-dom'
+import { useAppDispatch } from '../../hooks/hooks'
+import { RoutePath } from '../../enums/RouteEnums'
+import { createUser } from '../../slices/currentUserSlice'
+import { LocalStorageNames } from '../../enums/LocalStorageEnums'
 
 export const RegisterPage = () => {
+
+  const dispatch = useAppDispatch()
+  const navigate = useNavigate()
+
+  const token = localStorage.getItem(LocalStorageNames.TOKEN)
+
+  useEffect(()=> {
+    if(token){
+      navigate(RoutePath.HOME + RoutePath.USER)
+    }
+  }, [token])
+
+  const handlerSubmitForm = (form: RegisterFormNames) => {
+    dispatch(createUser(form))
+  }
+
   return (
     <Center
       className='bg-orange-100 flex-col gap-5'
     >
-        <Register/>
-        <Link to='/login' className='hover:text-sky-500 underline font-medium'>I have an account</Link>
-        <Link to='/user' className='hover:text-sky-500 underline font-medium'>Demo</Link>
+        <Register
+          onSubmit={handlerSubmitForm}
+        />
+        <Link to={RoutePath.LOGIN} className='hover:text-sky-500 underline font-medium'>I have an account</Link>
     </Center>
   )
 }

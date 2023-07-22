@@ -2,8 +2,7 @@ import { useEffect } from "react"
 import { useAppSelector, useAppDispatch } from "../../hooks/hooks"
 import type { UserModel } from "../../models/UserModel"
 import { UserCard } from "../outputs/UserCard"
-import { deleteUser } from "../../slices/usersSlice"
-import { enter } from "../../slices/currentUserSlice"
+import { deleteUser, enter } from "../../slices/currentUserSlice"
 import { getUsers } from "../../slices/usersSlice"
 import { matchedValueInArr } from "../../customFunctions/isCoincidenceInArr"
 import { useNavigate } from "react-router-dom"
@@ -69,12 +68,12 @@ export const Users = () => {
 
     const handlerEnter = (id:string) => {
         currentUser && socket.emit<SocketEmmits>(SocketEmmits.QUIT_USER)
-        dispatch(enter(id)); 
+        dispatch(enter()); 
         localStorage.setItem(LocalStorageNames.CURRENT_USER, id)
     }
   
     const handlerDelete = (id:string) => {
-        dispatch(deleteUser(id))
+        dispatch(deleteUser())
     }
     
     const handlerAddToFriends = (user: UserModel) => {
@@ -143,14 +142,14 @@ export const Users = () => {
                                 friendCounter={friends.length}
                                 postCounter={posts.length}
                             >
-                                {
+                                {/* {
                                     !isI &&
                                     <RoundButton 
                                         title='Войти'  
                                         icon = {<ArrowDownTrayIcon className={`${iconSizeClass} text-white`}/>}   
                                         onClick={()=>handlerEnter(user._id)}   
                                     />
-                                }
+                                } */}
                                
                                 { 
                                 currentUser &&
@@ -210,11 +209,15 @@ export const Users = () => {
                                     }
                                 </>
                                 }
-                                <RoundButton 
-                                    title='Удалить пользователя'  
-                                    icon = {<XCircleIcon className={`${iconSizeClass} text-white`}/>}
-                                    onClick={()=>handlerDelete(user._id)}      
-                                />
+                                {
+                                    
+                                    user.contacts.email !== 'guest@guest' && currentUser && currentUser._id === _id &&
+                                    <RoundButton 
+                                        title='Удалить пользователя'  
+                                        icon = {<XCircleIcon className={`${iconSizeClass} text-white`}/>}
+                                        onClick={()=>handlerDelete(user._id)}      
+                                    />
+                                }
                             </UserCard>
                         )
                     })

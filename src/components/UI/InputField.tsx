@@ -17,6 +17,7 @@ interface InputProps {
 
 export const InputField = ({
   onChange = () => {},
+  onBlur = () => {},
   value = "",
   name,
   className,
@@ -43,6 +44,7 @@ export const InputField = ({
             type={toggle ? 'text' : type}
             name={name}
             onChange={onChange}
+            onBlur = {onBlur}
             value={value || ""}
             placeholder={placeholder ? placeholder : ''}
           />

@@ -8,6 +8,7 @@ import posts from '../slices/postSlice'
 import friends from '../slices/friendSlice'
 import invitations from '../slices/invitationSlice'
 import suggestations from '../slices/suggestationSlice'
+import info from '../slices/infoSlice'
 
 export const store = configureStore({
   reducer: {
@@ -19,7 +20,8 @@ export const store = configureStore({
     posts,
     friends,
     invitations,
-    suggestations
+    suggestations,
+    info
   },
 })
 

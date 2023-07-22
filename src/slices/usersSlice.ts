@@ -4,12 +4,10 @@ import {
   PayloadAction,
 } from "@reduxjs/toolkit"
 import { UserModel } from "../models/UserModel"
-import { useHttp } from "../hooks/useHttp"
-import { USERSROUTE } from "../http"
-import { RegisterFormNames } from "../components/UI/RegisterForm"
-import axios from 'axios'
+import axios from '../axios'
 import { Slice } from "../models/Slice"
 import { isPayload, QueryPayload, queryString } from "../customFunctions/queryString"
+import { Endpoints } from "../enums/Endpoints"
 
 
 
@@ -21,27 +19,14 @@ import { isPayload, QueryPayload, queryString } from "../customFunctions/querySt
     export const getUsers = createAsyncThunk(
       "users/getUsers",
       async (payload: QueryPayload = {}) => {
-        // console.log('get users');
-        // console.log(payload);
         if(isPayload(payload)){
           const query = queryString(payload)
-          const {data} = await axios.get(`${USERSROUTE}?${query}`)
+          const {data} = await axios.get<{users: UserModel[]}>(`${Endpoints.USERS}?${query}`)
           return {users: data.users}
         }
           return {users: []}
         } 
     )
-
-    export const deleteUser = createAsyncThunk(
-        "users/deleteUser",
-        async (userId: string) => {
-            console.log(userId);
-            await axios.delete(`${USERSROUTE}/${userId}`)
-            return userId
-        },
-    )
-
-    
 
 
 const users = createSlice({
@@ -80,6 +65,9 @@ const users = createSlice({
           ?.chats.push(action.payload.chatId)
       })
     },
+    deleteFromUsers: (state, action: PayloadAction<string>) => {
+      state.container = state.container.filter((user) => user._id !== action.payload)
+    }
   },
   extraReducers: (builder) => {
     builder
@@ -90,11 +78,6 @@ const users = createSlice({
         state.container = action.payload.users
         state.isLoading = false
       })
-
-      .addCase(deleteUser.fulfilled, (state, action) => {
-          state.container = state.container.filter((user) => user._id !== action.payload)
-      })
-    
   },
 })
 

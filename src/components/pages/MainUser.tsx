@@ -104,7 +104,7 @@ export const MainUser = () => {
     
 
   return (
-    <div className='my-5'>
+    <div className='my-5 grow'>
         <div className=' container mx-auto'>
             <TopBox 
                 messageCounter={messageCounter}

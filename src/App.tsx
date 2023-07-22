@@ -20,6 +20,7 @@ import { Login } from './components/Forms/Login'
 import { RegisterPage } from './components/pages/RegisterPage'
 import { RoutePath } from './enums/RouteEnums'
 import { LocalStorageNames } from './enums/LocalStorageEnums'
+import { LoginPage } from './components/pages/LoginPage'
 
 
 export const socket = io(URL, {auth:{
@@ -27,6 +28,8 @@ export const socket = io(URL, {auth:{
 }})
 
 function App() {
+
+  
 
   const navigate = useNavigate()
 
@@ -41,15 +44,15 @@ function App() {
 
   useEffect(()=>{
     const userId = localStorage.getItem(LocalStorageNames.CURRENT_USER)
-    if(userId){
-      dispatch(enter(userId)) 
-      navigate(RoutePath.USER)
+    if(true){
+      dispatch(enter()) 
     } 
     dispatch(getUsers({})) 
   },[])
 
-  
   useEffect(()=>{
+    console.log('effect');
+    navigate(RoutePath.HOME)
    if (currentUser){
       subscribes(dispatch, currentUser, controller)
       userLoads(dispatch, currentUser)
@@ -69,7 +72,7 @@ function App() {
             <Route path={RoutePath.POSTS} element={<Posts />} />
           </Route>
           <Route path={RoutePath.REGISTER} element={<RegisterPage/>}/>
-          <Route path={RoutePath.LOGIN} element={<Login/>}/>
+          <Route path={RoutePath.LOGIN} element={<LoginPage/>}/>
         </Route>
       </Routes>
     </>

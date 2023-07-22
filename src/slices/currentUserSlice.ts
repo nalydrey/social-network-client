@@ -1,11 +1,12 @@
-import axios from "axios"
-import { USERSROUTE } from "../http"
+import axios from '../axios'
 import { UserModel } from "../models/UserModel"
 import { EditUserForm } from "../components/pages/Profile"
 import { PayloadAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit"
-import { boolean } from "yup"
-
-import { socket } from "../App"
+import { RegisterFormNames } from "../components/Forms/Register"
+import { setInfo } from "./infoSlice"
+import { LocalStorageNames } from "../enums/LocalStorageEnums"
+import { Endpoints } from '../enums/Endpoints'
+import { LoginFormNames } from '../components/Forms/Login'
 
 export type CurrentUserState = {
   user: UserModel | null,
@@ -18,45 +19,83 @@ const initialState: CurrentUserState = {
     isLoadingAvatar: false,
     isLoadingPicture: false
   },
-  
 } 
 
-export const enter = createAsyncThunk("currentUser/enter", async (userId: string) => {
-    const {data} = await axios<{user: UserModel}>(`${USERSROUTE}/${userId}`)
+export const enter = createAsyncThunk(
+  "currentUser/enter", 
+  async (_, {dispatch}) => {
+  console.log('enter');
+    const {data} = await axios<{user: UserModel | null, info: string}>(Endpoints.USER)
+    console.log(data.user);
+    if(!data.user){
+      data.user = null
+    }  
     return data.user
 })
 
  export const createUser = createAsyncThunk(
   "currentUser/createUser",
-  async (newUser) => {
-      const {data} = await axios.post(USERSROUTE, newUser)
+  async (newUser : RegisterFormNames, {dispatch}) => {
+      const {data} = await axios.post<{user: UserModel | null, token: string, info: string}>(Endpoints.USER, newUser)
+      if(data.user){
+        localStorage.setItem(LocalStorageNames.TOKEN, data.token)
+      } 
+        dispatch(setInfo(data.info))
+
+      return {user: data.user}
+  },
+  )
+ 
+  export const loginUser = createAsyncThunk(
+  "currentUser/loginUser",
+  async (loginData : LoginFormNames, {dispatch}) => {
+      const {data} = await axios.post<{user: UserModel | null, token: string, info: string}>(Endpoints.USER_LOGIN, loginData)
+      if(data.user){
+        localStorage.setItem(LocalStorageNames.TOKEN, data.token)
+      } 
+      else{
+        dispatch(setInfo(data.info))
+        data.user = null
+      }
+
       return {user: data.user}
   },
   )
 
   export const editUser = createAsyncThunk(
   "currentUser/editUser",
-  async (editForm:EditUserForm) => {
-      const {data} = await axios.put(`${USERSROUTE}${editForm.userId}`, editForm)
+  async (editForm: EditUserForm) => {
+      const {data} = await axios.put(Endpoints.USER, editForm)
       return {user: data.user}
   },
   )
 
 export const changeMyAvatar = createAsyncThunk(
   "currentUser/changeMyAvatar",
-  async({userId, file}: {userId: UserModel['_id'], file: FormData}) => {
-    const {data}: {data: {avatar: string}} = await axios.put(`${USERSROUTE}/img/${userId}`, file)
+  async({file}: {file: FormData}) => {
+    const {data}: {data: {avatar: string}} = await axios.put(Endpoints.USER_IMG, file)
     return data.avatar
   }
 )
 
 export const changeMyPicture = createAsyncThunk(
   "currentUser/changeMyPicture",
-  async({userId, file}: {userId: UserModel['_id'], file: FormData}) => {
-    const {data}: {data: {picture: string}} = await axios.put(`${USERSROUTE}/picture/${userId}`, file)
+  async({file}: {file: FormData}) => {
+    const {data}: {data: {picture: string}} = await axios.put(Endpoints.USER_PICTURE, file)
     return data.picture
   }
 )
+
+export const deleteUser = createAsyncThunk(
+  "currentUser/deleteUser",
+  async (_ , {dispatch}) => {
+      const {data} = await axios.delete<{user: UserModel}>(Endpoints.USER)
+      localStorage.removeItem(LocalStorageNames.TOKEN)
+      console.log(data);
+      return
+  },
+)
+
 
 
 export const currentUserSlice = createSlice({
@@ -125,8 +164,14 @@ export const currentUserSlice = createSlice({
       .addCase(createUser.fulfilled, (state, action) =>{
         state.user = action.payload.user
       })
+      .addCase(loginUser.fulfilled, (state, action) =>{
+        state.user = action.payload.user
+      })
       .addCase(editUser.fulfilled, (state, action) =>{
         state.user = action.payload.user
+      })
+      .addCase(deleteUser.fulfilled, (state, action) =>{
+        state.user = null
       })
   },
 })

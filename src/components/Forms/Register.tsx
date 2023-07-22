@@ -1,11 +1,9 @@
 import {FormikHelpers, useFormik} from 'formik'
 import * as Yup from 'yup'
-import { useAppDispatch } from '../../hooks/hooks'
-import { createUser } from '../../slices/currentUserSlice'
 import { ContentBox } from '../UI/ContentBox'
 import { InputField } from '../UI/InputField'
 import { Button } from '../UI/Button'
-import { useNavigate } from 'react-router-dom'
+
 export interface RegisterFormNames{
     firstName: string 
     lastName: string
@@ -15,6 +13,7 @@ export interface RegisterFormNames{
 
 export interface RegisterFormProps {
     onCancel?: ()=>void
+    onSubmit: (form: RegisterFormNames) => void
 }
 
 interface FormField {
@@ -68,28 +67,26 @@ const validationSchema =  Yup.object({
     },
 ]
 
-export const Register = () => {
-
-    const navigate = useNavigate()
-
-    const dispatch = useAppDispatch()
+export const Register = ({
+    onCancel = () =>{},
+    onSubmit
+}: RegisterFormProps) => {
 
     const sentForm = (data:RegisterFormNames, helpers: FormikHelpers<RegisterFormNames>) => {
-        dispatch(createUser(data))
+        onSubmit(data)
         helpers.resetForm()
-        navigate('/user')
     }
 
     const formik = useFormik({
         initialValues,
         validationSchema,
-        onSubmit: sentForm
+        onSubmit: sentForm,
     })    
 
     const closeForm = () => {
+        onCancel()
         formik.resetForm()
     }
-
 
   return (
     <ContentBox
@@ -105,7 +102,7 @@ export const Register = () => {
                         key={input.name}
                         {...input}
                         id={input.name} 
-                        error = {formik.errors[input.name]}
+                        error = {formik.errors[input.name] && formik.touched[input.name] && formik.errors[input.name]}
                         value={formik.values[input.name]}
                         onChange={formik.handleChange}
                         onBlur={formik.handleBlur}
