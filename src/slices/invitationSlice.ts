@@ -1,12 +1,12 @@
 import { PayloadAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { Slice } from "../models/Slice";
 import { UserModel } from "../models/UserModel";
-import axios from "axios";
-import { USERSROUTE } from "../http";
+import axios from "../axios";
 import { queryString } from "../customFunctions/queryString";
 import { addFriendToCurrentUser, deleteInvitationFromCurrentUser } from "./currentUserSlice";
 import { addUserToFriends } from "./friendSlice";
 import { addFriendToUsers } from "./usersSlice";
+import { Endpoints } from "../enums/Endpoints";
 
 
 const initialState: Slice<UserModel>= {
@@ -20,7 +20,7 @@ export const getInvitations = createAsyncThunk(
         // console.log('getInvitations');
         if(invitations.length){
             const query = queryString({_id: invitations})
-            const {data} = await axios.get<{users: UserModel[]}>(`${USERSROUTE}?${query}`)
+            const {data} = await axios.get<{users: UserModel[]}>(`${Endpoints.USERS}?${query}`)
             console.log(data);
             return data
         }
@@ -36,7 +36,7 @@ export const acceptInvitation = createAsyncThunk(
       ) => {
         // console.log('friendId',friendId);
         // console.log('currentUserId',currentUserId);
-        const {data} = await axios.put<{user: UserModel}>(`${USERSROUTE}/friends/accept/${friendId}/${currentUserId}`)
+        const {data} = await axios.put<{user: UserModel}>(`${Endpoints.USERS}/friends/accept/${friendId}/${currentUserId}`)
         dispatch(addUserToFriends(data))
         dispatch(deleteInvitationFromCurrentUser({friendId: data.user._id}))
         dispatch(addFriendToCurrentUser({friendId}))
@@ -54,7 +54,7 @@ export const rejectInvitation = createAsyncThunk(
         ) => {
         // console.log('friendId',friendId)
         // console.log('currentUserId',currentUserId)
-        const {data} = await axios.put<{user: UserModel}>(`${USERSROUTE}/friends/reject/${friendId}/${currentUserId}`)
+        const {data} = await axios.put<{user: UserModel}>(`${Endpoints.USERS}/friends/reject/${friendId}/${currentUserId}`)
         dispatch(deleteInvitationFromCurrentUser({friendId}))
         return data
     }

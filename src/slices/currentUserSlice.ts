@@ -23,7 +23,7 @@ const initialState: CurrentUserState = {
 
 export const enter = createAsyncThunk(
   "currentUser/enter", 
-  async (_, {dispatch}) => {
+  async () => {
   console.log('enter');
     const {data} = await axios<{user: UserModel | null, info: string}>(Endpoints.USER)
     console.log(data.user);
@@ -65,6 +65,8 @@ export const enter = createAsyncThunk(
   export const editUser = createAsyncThunk(
   "currentUser/editUser",
   async (editForm: EditUserForm) => {
+    console.log('edit');
+    
       const {data} = await axios.put(Endpoints.USER, editForm)
       return {user: data.user}
   },

@@ -3,7 +3,6 @@ import { useAppDispatch, useAppSelector } from '../../hooks/hooks'
 import { UserModel } from '../../models/UserModel'
 import spiner from '../../assets/Spinner-5.gif'
 import { getUsers } from '../../slices/usersSlice'
-import { UserCard } from '../outputs/UserCard'
 
 export const Invitations = () => {
 

@@ -40,10 +40,10 @@ export const Profile = () => {
             Yup.object({
                 firstName: Yup.string().required('Field must be fill'),
                 lastName: Yup.string().required('Field must be fill'),
-                age: Yup.number().max(100, 'Age must be less'),
                 email: Yup.string().email('Invalid email address').required('Field must be fill'),
             }),
         onSubmit: () => {
+            console.log('!')
             const a: EditUserForm = {
                 userId: formik.values.firstName,
                 firstName: formik.values.firstName,

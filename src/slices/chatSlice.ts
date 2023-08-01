@@ -2,11 +2,11 @@ import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit"
 import type { ChatModel } from "../models/ChatModel"
 import type { MessageModel } from "../models/MessageModel"
 import type { Slice } from "../models/Slice"
-import { CHATSROUTE } from "../http"
-import axios from "axios"
+import axios from '../axios'
 import { addMyChat, deleteChatFromCurrentUser } from "./currentUserSlice"
 import { addChat } from "./usersSlice"
 import { socket } from "../App"
+import { Endpoints } from "../enums/Endpoints"
 
 
     export interface Chat extends Slice<ChatModel> {
@@ -28,7 +28,7 @@ import { socket } from "../App"
       "chats/getMyChats",
       async (currentUserId: string ) => {
           //Получаем свои чаты
-          const {data} = await axios.get<{chats: ChatModel[]}>(`${CHATSROUTE}/my/${currentUserId}`) 
+          const {data} = await axios.get<{chats: ChatModel[]}>(`${Endpoints.CHATS}/my`) 
           //удалить текущего потьзователя из чата
           let counter = 0
           data.chats.forEach(chat => {
@@ -91,10 +91,6 @@ export const chatSlice = createSlice({
       })
     },
     deactivateChat: (state, action: PayloadAction<string>) => {
-      // const activeChat = state.container.find((chat) => chat._id === action.payload)
-      // if(activeChat){
-      //   activeChat.isActive = false
-      // }
       state.container.forEach(chat => chat.isActive = false)
     },
     setTypingStatus: (state, action: PayloadAction<{chatId: string, status: boolean}>) => {

@@ -4,6 +4,7 @@ import { UserModel } from '../../models/UserModel'
 import { getUsers } from '../../slices/usersSlice'
 import { matchedValueInArr } from '../../customFunctions/isCoincidenceInArr'
 import { useNavigate } from 'react-router-dom'
+import { RoutePath } from '../../enums/RouteEnums'
 
 export const Friends = () => {
 
@@ -41,7 +42,7 @@ export const Friends = () => {
         //Создаем новый чат
         state.isCreateNewChat = true
         }
-        navigate("/chats", {state})
+        navigate(RoutePath.CHATS, {state})
     }
 }
 

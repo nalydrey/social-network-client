@@ -2,10 +2,10 @@ import { PayloadAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit"
 import type { MessageModel } from "../models/MessageModel"
 import type { Slice } from "../models/Slice"
 import type { UserModel } from "../models/UserModel"
-import axios from "axios"
-import { MESSAGEROUTE } from "../http"
+import axios from "../axios"
 import { ChatModel } from "../models/ChatModel"
 import {  decreaseCounter, increaseCounter } from "./chatSlice"
+import { Endpoints } from "../enums/Endpoints"
 
 
 
@@ -25,7 +25,7 @@ const initialState: MessageSliceModel = {
 export const getMessages = createAsyncThunk(
   "messages/getMessages",
   async ({chat}: { chat: string }) => {
-    const {data} = await axios.get<{messages: MessageModel[]}>(`${MESSAGEROUTE}/chat/${chat}`)
+    const {data} = await axios.get<{messages: MessageModel[]}>(`${Endpoints.MESSAGES}/chat/${chat}`)
     return data.messages
   },
 )

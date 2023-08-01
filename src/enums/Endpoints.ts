@@ -3,5 +3,8 @@ export enum Endpoints {
     USERS = 'users',
     USER_LOGIN = 'user/login',
     USER_IMG = 'user/img',
-    USER_PICTURE = 'user/picture'
+    USER_PICTURE = 'user/picture',
+    CHATS = 'chats',
+    POSTS = 'posts',
+    MESSAGES = 'messages'
 }

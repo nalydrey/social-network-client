@@ -1,10 +1,9 @@
 import { PayloadAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { Slice } from "../models/Slice";
 import { UserModel } from "../models/UserModel";
-import axios from "axios";
-import { USERSROUTE } from "../http";
+import axios from "../axios";
 import { queryString } from "../customFunctions/queryString";
-import { socket } from "../App";
+import { Endpoints } from "../enums/Endpoints";
 
 
 const initialState: Slice<UserModel> = {
@@ -15,10 +14,9 @@ const initialState: Slice<UserModel> = {
 export const getSuggestations = createAsyncThunk(
     'suggestations/getSuggestations',
     async (suggestations: string[]) => {
-        // console.log('getInvitations');
         if(suggestations.length){
             const query = queryString({_id: suggestations})
-            const {data} = await axios.get<{users: UserModel[]}>(`${USERSROUTE}?${query}`)
+            const {data} = await axios.get<{users: UserModel[]}>(`${Endpoints.USERS}?${query}`)
             return data
         }
         return {users: []}

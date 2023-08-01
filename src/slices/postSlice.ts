@@ -1,8 +1,8 @@
 import { PayloadAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { Slice } from "../models/Slice";
 import { PostModel } from "../models/PostModel";
-import axios from "axios";
-import { POSTSROUTE } from "../http";
+import axios from "../axios";
+import { Endpoints } from "../enums/Endpoints";
 
 
 
@@ -14,7 +14,7 @@ const initialState: Slice<PostModel> = {
 export const createPost = createAsyncThunk(
     'posts/createPost',
     async (form: FormData) => {
-        const {data} = await axios.post<{post:PostModel}>(POSTSROUTE, form)
+        const {data} = await axios.post<{post:PostModel}>(Endpoints.POSTS, form)
         console.log(data);
         return data.post
     }
@@ -23,7 +23,7 @@ export const createPost = createAsyncThunk(
 export const getPosts = createAsyncThunk(
     'posts/getPosts',
     async () => {
-        const {data} = await axios.get<{posts: PostModel[]}>(`${POSTSROUTE}`)
+        const {data} = await axios.get<{posts: PostModel[]}>(Endpoints.POSTS)
         return data.posts
     }
 )
@@ -31,7 +31,7 @@ export const getPosts = createAsyncThunk(
 export const getMyPosts = createAsyncThunk(
     'posts/getMyPosts',
     async (userId: string) => {
-        const {data} = await axios.get<{posts: PostModel[]}>(`${POSTSROUTE}/my/${userId}`)
+        const {data} = await axios.get<{posts: PostModel[]}>(`${Endpoints.POSTS}/my`)
         return data.posts
     }
 )
@@ -40,7 +40,7 @@ export const setLike = createAsyncThunk(
     'posts/setLike',
     async (payload: {userId: string, postId: string, isLike: boolean}, {dispatch}) => {
         const {userId, postId, isLike} = payload
-        const {data} = await axios.put(`${POSTSROUTE}like/${postId}/${userId}`, {isLike})
+        const {data} = await axios.put(`${Endpoints.POSTS}like/${postId}`, {isLike})
         data.isChange &&
         isLike ? dispatch(toggleLike({userId, postId})) : dispatch(toggleDislike({userId, postId}))
         
@@ -50,7 +50,7 @@ export const setLike = createAsyncThunk(
 export const deletePost = createAsyncThunk(
     'posts/deletePost',
     async ({postId, userId}:{postId: string, userId: string}) => {
-        const {data} = await axios.delete<{isDelete: boolean}>(`${POSTSROUTE}${postId}/${userId}`)
+        const {data} = await axios.delete<{isDelete: boolean}>(`${Endpoints.POSTS}${postId}/${userId}`)
         if(data.isDelete) return {postId}
     }
 )

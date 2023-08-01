@@ -6,6 +6,8 @@ import { Link, useNavigate } from "react-router-dom"
 import { quit } from "../../slices/currentUserSlice"
 import { RoutePath } from "../../enums/RouteEnums"
 import { LocalStorageNames } from "../../enums/LocalStorageEnums"
+import { socket } from "../../App"
+import { SocketEmmits } from "../../enums/SocketEnums"
 
 interface HeaderProps {
 }
@@ -26,7 +28,7 @@ export const Header = ({
   const handlerLogOut = () => {
     localStorage.removeItem(LocalStorageNames.TOKEN)
     dispatch(quit())
-    navigate(RoutePath.HOME)
+    socket.emit<SocketEmmits>(SocketEmmits.QUIT_USER, )
   }
  
 

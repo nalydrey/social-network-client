@@ -1,9 +1,10 @@
 import { useNavigate } from 'react-router-dom'
-import { useAppDispatch, useAppSelector } from '../../hooks/hooks'
+import { useAppDispatch } from '../../hooks/hooks'
 import { RoutePath } from '../../enums/RouteEnums'
-import { UserModel } from '../../models/UserModel'
 import { LocalStorageNames } from '../../enums/LocalStorageEnums'
-import { enter, loginUser, quit } from '../../slices/currentUserSlice'
+import { loginUser, quit } from '../../slices/currentUserSlice'
+import { socket } from '../../App'
+import { SocketEmmits } from '../../enums/SocketEnums'
 
 
 interface Actions {
@@ -58,6 +59,7 @@ export const Home = () => {
         if(name === 'Log Out'){
             localStorage.removeItem(LocalStorageNames.TOKEN)
             dispatch(quit())
+            socket.emit<SocketEmmits>(SocketEmmits.QUIT_USER, )
         }
     }
  
