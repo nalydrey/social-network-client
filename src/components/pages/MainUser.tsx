@@ -12,6 +12,7 @@ import { matchedValueInArr } from '../../customFunctions/isCoincidenceInArr'
 import { socket } from '../../App'
 import { useStateController } from '../../hooks/useStateController'
 import { SocketEmmits } from '../../enums/SocketEnums'
+import { useLogic } from '../../hooks/useLogic'
 
 export const MainUser = () => {
 
@@ -20,10 +21,13 @@ export const MainUser = () => {
     const controller = useStateController()
   const {
     removeFromSuggestation,
-    removeFromInvitation,
-    moveToFriend,
-    removeFromFriend
   } = controller
+
+  const {
+    acceptFriend,
+    deleteFriend,
+    rejectFriend
+  } = useLogic()
 
 
     const dispatch = useAppDispatch()
@@ -31,28 +35,21 @@ export const MainUser = () => {
     const currentUser = useAppSelector<UserModel | null>(state => state.currentUser.user)
     const users = useAppSelector<UserModel[]>(state => state.users.container)
     const messageCounter = useAppSelector<number>(state => state.chats.messageCounter)
+    const friends = useAppSelector(state => state.friends.container)
 
-
-
-
-    const closeRegisterForm: ()=>void = () => {
-        dispatch(controlMessageModal(false))
-      }
-    
+   
       const changeAvatar = (e: ChangeEvent<HTMLInputElement>) => {
         const files = e.target.files
         const avatar = new FormData()
         files && avatar.append('avatar', files[0])
-        currentUser &&
-        dispatch(changeMyAvatar({userId: currentUser._id, file: avatar}))
+        dispatch(changeMyAvatar({file: avatar}))
       }
       
       const changePicture = (e: ChangeEvent<HTMLInputElement>) => {
         const files = e.target.files
         const avatar = new FormData()
         files && avatar.append('picture', files[0])
-        currentUser &&
-        dispatch(changeMyPicture({userId: currentUser._id, file: avatar}))
+        dispatch(changeMyPicture({file: avatar}))
       }
     
       const goToChat: (userId: string) => void = (userId) => {
@@ -80,27 +77,15 @@ export const MainUser = () => {
         }
     }
     
-    const handlerDeleteFromFriends = (userId:string) => {
-      removeFromFriend({userId})
-      socket.emit<SocketEmmits>(SocketEmmits.DELETE_FRIEND, {friendId: userId})
-    }
     
     const handlerCancelSuggestation = (userId:string) => {
-      if( currentUser && currentUser.myRequests.includes(userId) ) {
         removeFromSuggestation({userId})
         socket.emit<SocketEmmits>(SocketEmmits.CANCEL_SUGGESTATION, {friendId: userId})
-      }
     }
     
-    const handlerReject = (userId:string) => {
-      removeFromInvitation({userId})
-      socket.emit<SocketEmmits>(SocketEmmits.REJECT_INVITATION, {friendId:userId})
-    }
+   
     
-    const handlerAccept = (user:UserModel) => {
-      moveToFriend({user})
-      socket.emit<SocketEmmits>(SocketEmmits.ACCEPT_INVITATION, {friendId: user._id})
-    }
+  
     
 
   return (
@@ -112,29 +97,28 @@ export const MainUser = () => {
                 onChangeAvatar={changeAvatar}
             />
             <div className='flex flex-col gap-5 relative  mx-1 md:flex-row'>
-                <div className='flex flex-col gap-5 w-full md:max-w-[270px]'>
+                <div className='hidden md:flex flex-col gap-5 w-full md:max-w-[270px]'>
 
                     <FriendBox
-                        isShow = {false}
+                        title='Friends'
+                        content={friends}
                         onWriteMessage={goToChat}
-                        onDeleteFromFriends={handlerDeleteFromFriends}
+                        onDeleteFromFriends={deleteFriend}
                     />
 
                     <InvitationBox
-                        isShow = {false}
                         onWriteMessage={goToChat}
-                        onAccept={handlerAccept}
-                        onReject={handlerReject}
+                        onAccept={acceptFriend}
+                        onReject={rejectFriend}
                     />
                     
                     <SuggestationBox
-                        isShow = {false}
                         onWriteMessage={goToChat}
                         onCancel = {handlerCancelSuggestation}
                     />
                 
                 </div>
-                <div className={`absolute md:static md:-translate-y-0 w-full ${ true  ? 'top-[0px]': '-top-[400px] -translate-y-full'}  duration-1000 `}>
+                <div className={`w-full`}>
                    <Outlet/>
                 </div>
             </div>

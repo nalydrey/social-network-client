@@ -4,11 +4,10 @@ import { URL } from '../../http'
 import { ButtonUnderline } from '../UI/ButtonUnderline'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { ImageWithPreloader } from '../UI/ImageWithPreloader'
-import { DotsPreloader } from '../Preloaders/DotsPreloader'
 import { Avatar } from '../UI/Avatar'
 import { useAppSelector } from '../../hooks/hooks'
-import { UserModel } from '../../models/UserModel'
 import { RoutePath } from '../../enums/RouteEnums'
+import { InputButton } from '../UI/InputButton'
 
 interface TopBoxProps {
     onChangeAvatar: (e: ChangeEvent<HTMLInputElement>)=>void
@@ -25,13 +24,9 @@ export const TopBox = ({
 
     const host = URL + RoutePath.HOME
 
-    const currentUser = useAppSelector<UserModel | null>(state => state.currentUser.user)
+    const currentUser = useAppSelector(state => state.currentUser.user)
 
-    const {isLoadingAvatar, isLoadingPicture} = useAppSelector<
-  {
-    isLoadingAvatar: boolean
-    isLoadingPicture: boolean
-  }>(state => state.currentUser.loadings)
+    const {isLoadingAvatar, isLoadingPicture} = useAppSelector(state => state.currentUser.loadings)
 
     const avatar = currentUser && currentUser.private.avatar ? host + currentUser.private.avatar : ''
     const picture = currentUser && currentUser.picture ? host + currentUser.picture : ''
@@ -41,6 +36,8 @@ export const TopBox = ({
     const navigate = useNavigate()
     const location = useLocation()
  
+
+
     
 
   return (
@@ -52,29 +49,19 @@ export const TopBox = ({
                 src={picture} 
                 alt='picture'
             />
-            
-            {   isLoadingPicture &&
-                    <DotsPreloader className='absolute top-0'/>
-            }
             <div className='absolute bottom-0 right-0 px-5 translate-y-0 sm:translate-y-1/2 z-10 flex gap-3'>
-                <label htmlFor="avatar" className=' bg-orange-500 flex p-1 w-8 h-8 sm:w-10 sm:h-10 items-center justify-center rounded-full cursor-pointer duration-300 hover:scale-125'>
-                    <CameraIcon className="h-7 w-7 text-blue-800 cursor-pointer" />
-                    <input  className='hidden' 
-                            type='file' 
-                            id='avatar'
-                            accept='.jpg, .png' 
-                            onChange={onChangeAvatar}
-                    />
-                </label>
-                <label htmlFor="picture" className=' bg-green-500 p-1 w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center rounded-full cursor-pointer duration-300 hover:scale-125'>
-                    <PhotoIcon className="h-7 w-7 text-orange-800 cursor-pointer" />
-                    <input  className='hidden' 
-                            type='file' 
-                            id='picture'
-                            accept='.jpg, .png' 
-                            onChange={onChangePicture}
-                    />
-                </label>
+                <InputButton
+                    isLoading = {isLoadingAvatar}
+                    icon = {<CameraIcon />}
+                    name='avatar'
+                    onChange={onChangeAvatar}
+                />
+                <InputButton
+                    isLoading = {isLoadingPicture}
+                    icon = {<PhotoIcon />}
+                    name='picture'
+                    onChange={onChangePicture}
+                />
             </div>
         </div>
 
@@ -108,6 +95,11 @@ export const TopBox = ({
                     title='All Posts'
                     isActive={location.pathname === RoutePath.HOME + RoutePath.POSTS}
                     onClick={()=>{navigate(RoutePath.POSTS)}}
+                />
+                <ButtonUnderline
+                    title='Friends'
+                    isActive={location.pathname === RoutePath.HOME + RoutePath.POSTS}
+                    onClick={()=>{navigate(RoutePath.FRIENDS)}}
                 />
             </div>    
         </div>

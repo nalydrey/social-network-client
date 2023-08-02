@@ -9,9 +9,11 @@ import friends from '../slices/friendSlice'
 import invitations from '../slices/invitationSlice'
 import suggestations from '../slices/suggestationSlice'
 import info from '../slices/infoSlice'
+import app from '../slices/appSlice'
 
 export const store = configureStore({
   reducer: {
+    app,
     users,
     currentUser,
     aux,

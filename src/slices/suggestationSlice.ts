@@ -23,7 +23,6 @@ export const getSuggestations = createAsyncThunk(
     }
 )
 
-
 export const suggestationSlice = createSlice({
     name: 'suggestations',
     initialState,

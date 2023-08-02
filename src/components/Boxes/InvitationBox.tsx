@@ -10,14 +10,12 @@ interface InvitationBoxProps {
     onWriteMessage: (id: string) => void 
     onAccept: (user: UserModel) => void 
     onReject: (id: string) => void 
-    isShow: boolean
 }
 
 export const InvitationBox = ({
     onWriteMessage,
     onAccept,
     onReject,
-    isShow
 }: InvitationBoxProps) => {
 
     const invitations = useAppSelector<UserModel[]>(state => state.invitations.container)
@@ -26,7 +24,6 @@ export const InvitationBox = ({
     return (
     <ContentBox 
         title='Invitation' 
-        className={`absolute md:static md:-translate-y-0 w-full  ${isShow ? 'top-[0px]': '-top-[400px] -translate-y-full'}  duration-1000`}
     >
         <MappingBox 
             className='w-full'

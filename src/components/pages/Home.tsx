@@ -3,9 +3,6 @@ import { useAppDispatch } from '../../hooks/hooks'
 import { RoutePath } from '../../enums/RouteEnums'
 import { LocalStorageNames } from '../../enums/LocalStorageEnums'
 import { loginUser, quit } from '../../slices/currentUserSlice'
-import { socket } from '../../App'
-import { SocketEmmits } from '../../enums/SocketEnums'
-
 
 interface Actions {
     name: string
@@ -13,26 +10,11 @@ interface Actions {
 }
 
 const actions: Actions[] = [
-    {
-        name: 'Register',
-        path: RoutePath.REGISTER,
-    },
-    {
-        name: 'Login',
-        path: RoutePath.LOGIN,
-    },
-    {
-        name: 'Enter',
-        path: RoutePath.USER,
-    },
-    {
-        name: 'Log Out',
-        path: RoutePath.HOME
-    },
-    {
-        name: 'Demo',
-        path: RoutePath.USER
-    }
+    {name: 'Register',  path: RoutePath.REGISTER,},
+    {name: 'Login',     path: RoutePath.LOGIN,},
+    {name: 'Enter',     path: RoutePath.USER,},
+    {name: 'Log Out',   path: RoutePath.HOME},
+    {name: 'Demo',      path: RoutePath.USER}
 ]
 
 
@@ -57,9 +39,7 @@ export const Home = () => {
             dispatch(loginUser({email: 'guest@guest', password: 'guest'}))
         }
         if(name === 'Log Out'){
-            localStorage.removeItem(LocalStorageNames.TOKEN)
             dispatch(quit())
-            socket.emit<SocketEmmits>(SocketEmmits.QUIT_USER, )
         }
     }
  
@@ -74,7 +54,9 @@ export const Home = () => {
                             <button 
                                 className='hover:text-sky-700'
                                 onClick={() => {handlerAction(page.name, page.path)}}
-                            >{page.name}</button>
+                            >
+                                {page.name}
+                            </button>
                         </li>
                     ))
                 }

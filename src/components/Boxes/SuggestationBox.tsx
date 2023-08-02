@@ -9,13 +9,11 @@ import { URL } from '../../http'
 interface SuggestationBoxProps {
     onWriteMessage: (id: string) => void 
     onCancel: (id: string) => void 
-    isShow: boolean
 }
 
 export const SuggestationBox = ({
     onWriteMessage,
     onCancel,
-    isShow
 }: SuggestationBoxProps) => {
 
     const suggestations = useAppSelector<UserModel[]>(state => state.suggestations.container)
@@ -24,7 +22,6 @@ export const SuggestationBox = ({
 return (
     <ContentBox 
         title='Suggestation'
-        className={`absolute md:static md:-translate-y-0 w-full  ${isShow ? 'top-[0px]': '-top-[400px] -translate-y-full'}  duration-1000`}
     >
         <MappingBox 
             className='w-full'

@@ -4,10 +4,12 @@ import { ChatBar } from '../outputs/ChatBar'
 import { Info } from './Info'
 import { useAppDispatch, useAppSelector } from '../../hooks/hooks'
 import { setInfo } from '../../slices/infoSlice'
+import { MainMenu } from '../UI/MainMenu'
 
 export const Layout = () => {
 
   const {info} = useAppSelector<{info: string}>(state => state.info) 
+  const app = useAppSelector(state => state.app)
 
   return (
     <div className='flex flex-col min-h-screen '>
@@ -17,6 +19,9 @@ export const Layout = () => {
           <ChatBar/>
           <Info
             text={info}
+          />
+          <MainMenu
+            isOpen = {app.menuWindow}
           />
         </div>
     </div>

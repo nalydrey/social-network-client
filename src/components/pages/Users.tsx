@@ -5,7 +5,6 @@ import { UserCard } from "../outputs/UserCard"
 import { deleteUser } from "../../slices/currentUserSlice"
 import { getUsers } from "../../slices/usersSlice"
 import { matchedValueInArr } from "../../customFunctions/isCoincidenceInArr"
-import { useNavigate } from "react-router-dom"
 import { MappingBox } from "../UI/MappingBox"
 import { RoundButton } from "../UI/RoundButton"
 import {  ChatBubbleLeftRightIcon, UserMinusIcon, UserPlusIcon, XCircleIcon } from "@heroicons/react/24/solid"
@@ -37,20 +36,12 @@ export const Users = () => {
     const isLoadingSuggest = useAppSelector<boolean>((state) => state.suggestations.isLoading)
     const isLoadingInvitations = useAppSelector<boolean>((state) => state.invitations.isLoading)
 
-    const navigate = useNavigate()      
-
     useEffect(() => {
       dispatch(getUsers({}))
     }, [])
 
     const goToChat: (userId: string) => void = (userId) => {
         if(currentUser){
-            const state = {
-                isCreateNewChat: false,
-                activeChat: '',
-                userId
-            }
-    
             const userChats = users.find((user) => user._id === userId)?.chats
             if (userChats) {
                 const matchedChat = matchedValueInArr(currentUser.chats, userChats)
@@ -113,7 +104,7 @@ export const Users = () => {
             loadingComponent = {<UserCardSkeleton/>}
             alternateComponent = 'Пока нет пользователей'
         >
-            <ul className='grid justify-center justify-items-center sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4  gap-5 '>
+            <ul className='grid justify-center grid-cols-1 justify-items-center sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4  gap-5 '>
                 {
                     users.map(user => {
                         const {_id, isOnline, picture, friends, posts} = user
@@ -122,7 +113,6 @@ export const Users = () => {
                         const isMyRequest = (currentUser?.myRequests.includes(user._id))
                         const isMyFriend = currentUser?.friends.includes(user._id)
                         const isMyInvitation = currentUser?.invitations.includes(user._id )
-                        const iconSizeClass = 'w-6 h-6'
                         return (
                             <UserCard 
                                 key={_id}
@@ -143,7 +133,7 @@ export const Users = () => {
                                         <RoundButton 
                                             title='Пригласить в друзья' 
                                             isLoading = {isLoadingSuggest}
-                                            icon = {<UserPlusIcon className={`${iconSizeClass} text-white`}/>}
+                                            icon = {<UserPlusIcon className='text-white'/>}
                                             onClick={() => handlerAddToFriends(user)}  
                                         />
                                     }
@@ -152,7 +142,7 @@ export const Users = () => {
                                         <RoundButton 
                                             title='Отозвать приглашение'  
                                             isLoading = {isLoadingSuggest}
-                                            icon = {<UserMinusIcon className={`${iconSizeClass} text-white`}/>}
+                                            icon = {<UserMinusIcon />}
                                             onClick={() => handlerCancelSuggestation(user._id)}  
                                         />
                                     }
@@ -162,13 +152,13 @@ export const Users = () => {
                                             <RoundButton 
                                                 title='Принять приглашение'
                                                 isLoading={isLoadingInvitations}
-                                                icon = {<UserPlusIcon className={`${iconSizeClass} text-white`}/>}
+                                                icon = {<UserPlusIcon />}
                                                 onClick={()=>handlerAccept(user)}   
                                             />
                                             <RoundButton 
                                                 title='Отклонить приглашение' 
                                                 isLoading={isLoadingInvitations}
-                                                icon = {<UserMinusIcon className={`${iconSizeClass} text-white`}/>}
+                                                icon = {<UserMinusIcon />}
                                                 onClick={() => handlerReject(user._id)}     
                                             />
                                         </>
@@ -178,7 +168,7 @@ export const Users = () => {
                                         <RoundButton 
                                             title='Удалить из друзей'  
                                             isLoading = {isLoadingFriends}
-                                            icon = {<UserMinusIcon className={`${iconSizeClass} text-white`}/>}
+                                            icon = {<UserMinusIcon />}
                                             onClick={() =>  handlerDeleteFromFriends(user._id)}       
                                         />
                                     }
@@ -187,7 +177,7 @@ export const Users = () => {
                                         !isI &&
                                         <RoundButton 
                                             title='Написать сообщение' 
-                                            icon = {<ChatBubbleLeftRightIcon className={`${iconSizeClass} text-white`}/>} 
+                                            icon = {<ChatBubbleLeftRightIcon />} 
                                             onClick={()=>goToChat(user._id)}
                                         />
                                     }
@@ -198,7 +188,7 @@ export const Users = () => {
                                     user.contacts.email !== 'guest@guest' && currentUser && currentUser._id === _id &&
                                     <RoundButton 
                                         title='Удалить пользователя'  
-                                        icon = {<XCircleIcon className={`${iconSizeClass} text-white`}/>}
+                                        icon = {<XCircleIcon />}
                                         onClick={()=>handlerDelete(user._id)}      
                                     />
                                 }

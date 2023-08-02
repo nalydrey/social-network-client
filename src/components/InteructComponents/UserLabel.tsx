@@ -43,7 +43,7 @@ export const UserLabel = ({
         <div className='flex items-center gap-2 mx-2 cursor-pointer'
             onClick={handlerUserMenu}
         >
-            <p className='font-bold text-gray-300'>Hello, {firstName}</p>
+            <p className=' hidden md:block  font-bold text-gray-300'>Hello, {firstName}</p>
             <Avatar
                 className=' shadow-light'
                 src = {avatar && URL + '/' + avatar}

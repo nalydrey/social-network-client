@@ -4,8 +4,11 @@ export enum RoutePath {
     PROFILE = 'profile',
     MY_POSTS ='myposts',
     POSTS = 'posts',
+    FRIENDS = 'friends',
+    SUGGESTATIONS = 'suggestations',
+    INVITATIONS = 'invitations',
     REGISTER = '/register',
     LOGIN = '/login',
-    CHATS = '/chats'
+    CHATS = '/chats',
 
 }

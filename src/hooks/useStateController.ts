@@ -7,6 +7,7 @@ import { useAppDispatch, useAppSelector } from "./hooks"
 import { addMyRequest, deleteMyRequest } from "../slices/suggestationSlice"
 import { addToInvitation, deleteFromInvitation } from "../slices/invitationSlice"
 import { socket } from "../App"
+import { SocketEmmits } from "../enums/SocketEnums"
 
 
 type UserParam = ({user}: {user: UserModel}) => void
@@ -76,6 +77,8 @@ export const useStateController: StateController = ( ) => {
             dispatch(deleteFriendFromUsers({friendId: currentUser._id, userId: userId}))
         }
     }
+
+  
  
 
     return {
@@ -84,6 +87,6 @@ export const useStateController: StateController = ( ) => {
         removeFromSuggestation,
         removeFromInvitation,
         moveToFriend,
-        removeFromFriend
+        removeFromFriend,
     }
 }

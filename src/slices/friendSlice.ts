@@ -4,13 +4,13 @@ import { UserModel } from "../models/UserModel"
 import axios from '../axios'
 import { queryString } from '../customFunctions/queryString'
 import { Endpoints } from '../enums/Endpoints'
+import { RootState } from '../store/store'
 
 
 const initialState: Slice<UserModel> = {
     container: [],
     isLoading: false
 }
-
 
 export const getFriends = createAsyncThunk(
     'friends/getFriends',
@@ -23,10 +23,6 @@ export const getFriends = createAsyncThunk(
         return {friends: []}
     }
 ) 
-
-
-
-
 
 export const friendSlice = createSlice({
     name: 'friends',

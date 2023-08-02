@@ -7,6 +7,8 @@ import { setInfo } from "./infoSlice"
 import { LocalStorageNames } from "../enums/LocalStorageEnums"
 import { Endpoints } from '../enums/Endpoints'
 import { LoginFormNames } from '../components/Forms/Login'
+import { socket } from '../App'
+import { SocketEmmits } from '../enums/SocketEnums'
 
 export type CurrentUserState = {
   user: UserModel | null,
@@ -100,12 +102,22 @@ export const deleteUser = createAsyncThunk(
 
 
 
+
+
+
 export const currentUserSlice = createSlice({
   name: "currentUser",
   initialState,
   reducers: {
-    quit: (state) => {
-      state.user = null
+    quit: {
+      reducer: (state) => {
+        state.user = null
+      },
+      prepare: () => {
+        localStorage.removeItem(LocalStorageNames.TOKEN)
+        socket.emit<SocketEmmits>(SocketEmmits.QUIT_USER)
+        return {payload: null}
+      }
     },
     addMyChat: (state, action: PayloadAction<string>) => {
       if(state.user) 

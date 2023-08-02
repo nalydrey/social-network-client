@@ -21,6 +21,7 @@ import { RegisterPage } from './components/pages/RegisterPage'
 import { RoutePath } from './enums/RouteEnums'
 import { LocalStorageNames } from './enums/LocalStorageEnums'
 import { LoginPage } from './components/pages/LoginPage'
+import { FriendBox } from './components/Boxes/FriendBox'
 
 
 export const socket = io(URL, {auth:{
@@ -70,6 +71,7 @@ function App() {
             <Route path={RoutePath.PROFILE} element={<Profile />}/>
             <Route path={RoutePath.MY_POSTS} element={<MyPosts />} />
             <Route path={RoutePath.POSTS} element={<Posts />} />
+            {/* <Route path={RoutePath.FRIENDS} element={<FriendBox />} /> */}
           </Route>
           <Route path={RoutePath.REGISTER} element={<RegisterPage/>}/>
           <Route path={RoutePath.LOGIN} element={<LoginPage/>}/>

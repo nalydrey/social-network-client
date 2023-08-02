@@ -40,7 +40,7 @@ export const UserMenu = ({
   return (
     <div className="relative">
           <RoundButton
-              icon={<UserIcon className="w-6 h-6 text-white"/>}
+              icon={<UserIcon />}
               onClick={handlerUserMenu}
           />
           <Tooltip
