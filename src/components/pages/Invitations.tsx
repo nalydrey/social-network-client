@@ -1,15 +1,14 @@
 import {useEffect} from 'react'
 import { useAppDispatch, useAppSelector } from '../../hooks/hooks'
-import { UserModel } from '../../models/UserModel'
 import spiner from '../../assets/Spinner-5.gif'
 import { getUsers } from '../../slices/usersSlice'
 
 export const Invitations = () => {
 
   const dispatch = useAppDispatch()
-  const isLoading = useAppSelector<UserModel>(state => state.users.isLoading)
-  const currentUser = useAppSelector<UserModel>(state => state.currentUser.user)
-  const invitations = useAppSelector<UserModel[]>(state => state.users.container)
+  const isLoading = useAppSelector(state => state.users.isLoading)
+  const currentUser = useAppSelector(state => state.currentUser.user)
+  const invitations = useAppSelector(state => state.users.container)
 
   useEffect(()=>{
     console.log('invitation effect');

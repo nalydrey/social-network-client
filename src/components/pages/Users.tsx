@@ -1,97 +1,43 @@
 import { useEffect } from "react"
 import { useAppSelector, useAppDispatch } from "../../hooks/hooks"
-import type { UserModel } from "../../models/UserModel"
 import { UserCard } from "../outputs/UserCard"
 import { deleteUser } from "../../slices/currentUserSlice"
 import { getUsers } from "../../slices/usersSlice"
-import { matchedValueInArr } from "../../customFunctions/isCoincidenceInArr"
 import { MappingBox } from "../UI/MappingBox"
 import { RoundButton } from "../UI/RoundButton"
-import {  ChatBubbleLeftRightIcon, UserMinusIcon, UserPlusIcon, XCircleIcon } from "@heroicons/react/24/solid"
+import { ChatBubbleLeftRightIcon, UserMinusIcon, UserPlusIcon, XCircleIcon } from "@heroicons/react/24/solid"
 import { ContentBox } from "../UI/ContentBox"
 import { UserCardSkeleton } from "../Preloaders/UserCardSkeleton"
-import { socket } from "../../App"
-import { useStateController } from "../../hooks/useStateController"
-import { activateChat } from "../../slices/chatSlice"
 import { URL } from "../../http"
-import { SocketEmmits } from "../../enums/SocketEnums"
+import { useLogic } from "../../hooks/useLogic"
 
 
 
 export const Users = () => {
 
-    const {
-        moveToSuggestation,
-        moveToFriend,
-        removeFromFriend,
-        removeFromSuggestation,
-        removeFromInvitation,
-    } = useStateController()
-
     const dispatch = useAppDispatch()
-    const users = useAppSelector<UserModel[]>((state) => state.users.container)
-    const isLoadingUsers = useAppSelector<boolean>((state) => state.users.isLoading)
-    const isLoadingFriends = useAppSelector<boolean>((state) => state.friends.isLoading)
-    const currentUser = useAppSelector<UserModel | null>((state) => state.currentUser.user)
-    const isLoadingSuggest = useAppSelector<boolean>((state) => state.suggestations.isLoading)
-    const isLoadingInvitations = useAppSelector<boolean>((state) => state.invitations.isLoading)
+
+    const {
+        addFriend,
+        goToChat,
+        deleteFriend,
+        acceptFriend,
+        cancelSuggestation,
+        rejectFriend,
+    } = useLogic()
+
+    const users = useAppSelector((state) => state.users.container)
+    const isLoadingUsers = useAppSelector((state) => state.users.isLoading)
+    const currentUser = useAppSelector((state) => state.currentUser.user)
 
     useEffect(() => {
       dispatch(getUsers({}))
     }, [])
 
-    const goToChat: (userId: string) => void = (userId) => {
-        if(currentUser){
-            const userChats = users.find((user) => user._id === userId)?.chats
-            if (userChats) {
-                const matchedChat = matchedValueInArr(currentUser.chats, userChats)
-                
-                if (matchedChat) {
-                    dispatch(activateChat(matchedChat))
-                } 
-                else {
-                    socket.emit<SocketEmmits>(SocketEmmits.CREATE_NEW_CHAT, {userReceiver: userId})
-                }
-            }
-        }
-    }
-
     const handlerDelete = (id:string) => {
         dispatch(deleteUser())
     }
     
-    const handlerAddToFriends = (user: UserModel) => {
-        if(currentUser && !currentUser.myRequests.includes(user._id)) {
-            moveToSuggestation({user})
-            socket.emit<SocketEmmits>(SocketEmmits.NEW_INVITATION, {friendId: user._id})
-        }
-    }
-
-    const handlerCancelSuggestation = (userId:string) => {
-        if (currentUser && currentUser.myRequests.includes(userId)) {
-            removeFromSuggestation({userId})
-            socket.emit<SocketEmmits>(SocketEmmits.CANCEL_SUGGESTATION, {friendId: userId})
-        }
-        
-    }
-  
-    const handlerReject = (userId:string) => {
-        removeFromInvitation({userId})
-        socket.emit<SocketEmmits>(SocketEmmits.REJECT_INVITATION, {friendId:userId})
-    }
-    
-    
-    const handlerAccept = (user:UserModel) => {
-        moveToFriend({user})
-        socket.emit<SocketEmmits>(SocketEmmits.ACCEPT_INVITATION, {friendId: user._id})
-
-    }
-  
-    const handlerDeleteFromFriends = (userId:string) => {
-        removeFromFriend({userId})
-        socket.emit<SocketEmmits>(SocketEmmits.DELETE_FRIEND, {friendId: userId})
-    }
-
 
   return (
     <ContentBox 
@@ -132,18 +78,16 @@ export const Users = () => {
                                         !isI && !(isMyFriend || isMyInvitation || isMyRequest) &&
                                         <RoundButton 
                                             title='Пригласить в друзья' 
-                                            isLoading = {isLoadingSuggest}
                                             icon = {<UserPlusIcon className='text-white'/>}
-                                            onClick={() => handlerAddToFriends(user)}  
+                                            onClick={() => addFriend(user)}  
                                         />
                                     }
                                     {
                                         !isI && isMyRequest &&
                                         <RoundButton 
                                             title='Отозвать приглашение'  
-                                            isLoading = {isLoadingSuggest}
                                             icon = {<UserMinusIcon />}
-                                            onClick={() => handlerCancelSuggestation(user._id)}  
+                                            onClick={() => cancelSuggestation(user._id)}  
                                         />
                                     }
                                     {
@@ -151,15 +95,13 @@ export const Users = () => {
                                         <>  
                                             <RoundButton 
                                                 title='Принять приглашение'
-                                                isLoading={isLoadingInvitations}
                                                 icon = {<UserPlusIcon />}
-                                                onClick={()=>handlerAccept(user)}   
+                                                onClick={()=>acceptFriend(user)}   
                                             />
                                             <RoundButton 
                                                 title='Отклонить приглашение' 
-                                                isLoading={isLoadingInvitations}
                                                 icon = {<UserMinusIcon />}
-                                                onClick={() => handlerReject(user._id)}     
+                                                onClick={() => rejectFriend(user._id)}     
                                             />
                                         </>
                                     }
@@ -167,9 +109,8 @@ export const Users = () => {
                                         isMyFriend &&
                                         <RoundButton 
                                             title='Удалить из друзей'  
-                                            isLoading = {isLoadingFriends}
                                             icon = {<UserMinusIcon />}
-                                            onClick={() =>  handlerDeleteFromFriends(user._id)}       
+                                            onClick={() =>  deleteFriend(user._id)}       
                                         />
                                     }
 

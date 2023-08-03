@@ -1,4 +1,5 @@
-import { CameraIcon, PhotoIcon } from '@heroicons/react/24/solid'
+import { MouseEvent, useEffect, useState } from 'react'
+import { CameraIcon, EllipsisHorizontalIcon, PhotoIcon } from '@heroicons/react/24/solid'
 import {ChangeEvent} from 'react'
 import { URL } from '../../http'
 import { ButtonUnderline } from '../UI/ButtonUnderline'
@@ -8,18 +9,18 @@ import { Avatar } from '../UI/Avatar'
 import { useAppSelector } from '../../hooks/hooks'
 import { RoutePath } from '../../enums/RouteEnums'
 import { InputButton } from '../UI/InputButton'
+import { Tooltip } from '../UI/Tooltip'
+import { MenuItem } from '../UI/MenuItem'
 
 interface TopBoxProps {
     onChangeAvatar: (e: ChangeEvent<HTMLInputElement>)=>void
     onChangePicture: (e: ChangeEvent<HTMLInputElement>)=>void
-    messageCounter: number
 }
 
 
 export const TopBox = ({
     onChangeAvatar=()=>{},
     onChangePicture=()=>{},
-    messageCounter,
 }:TopBoxProps) => {
 
     const host = URL + RoutePath.HOME
@@ -35,13 +36,35 @@ export const TopBox = ({
 
     const navigate = useNavigate()
     const location = useLocation()
- 
 
+    const [isOpen, setOpen] = useState<boolean>(false)
+ 
+    const handleOpen = (e: MouseEvent) => {
+        e.stopPropagation()
+        setOpen(!isOpen)
+    }
+
+    const handleMove = (path: string) => {
+        navigate(path)
+        setOpen(false)
+    }
+
+    useEffect (()=>{
+        document.addEventListener('click', handlerClose)
+
+        return () => {
+            document.removeEventListener('click', handlerClose)
+        }
+    },[])
+
+    const handlerClose = () => {
+        setOpen(false)
+    }
 
     
 
   return (
-    <div className='box mb-4 mx-1 overflow-hidden'>
+    <div className='box mb-4 mx-1 '>
 
         <div className='relative pt-[30%] sm:pt-[20%] bg-indigo-400 w-full bg-cover bg-center bg-no-repeat'>
             <ImageWithPreloader 
@@ -88,19 +111,43 @@ export const TopBox = ({
                 />
                 <ButtonUnderline
                     title='My Posts'
-                    isActive={location.pathname === RoutePath.HOME+RoutePath.MY_POSTS}
+                    isActive={location.pathname === RoutePath.HOME+RoutePath.USER + '/' + RoutePath.MY_POSTS}
                     onClick={()=>{navigate(RoutePath.MY_POSTS)}}
                 />
                 <ButtonUnderline
                     title='All Posts'
-                    isActive={location.pathname === RoutePath.HOME + RoutePath.POSTS}
+                    isActive={location.pathname === RoutePath.HOME + RoutePath.USER+ '/' + RoutePath.POSTS}
                     onClick={()=>{navigate(RoutePath.POSTS)}}
                 />
-                <ButtonUnderline
-                    title='Friends'
-                    isActive={location.pathname === RoutePath.HOME + RoutePath.POSTS}
-                    onClick={()=>{navigate(RoutePath.FRIENDS)}}
-                />
+                <div className="relative self-end block md:hidden">
+                        <button className=""
+                            onClick={(e) => handleOpen(e)}
+                        >
+                            <EllipsisHorizontalIcon className="h-9"/>
+                        </button>
+                        <Tooltip 
+                            className='right-0 top-[110%]'
+                            isOpen={isOpen}  
+                        >
+                            <ul>
+                                <MenuItem
+                                    itemName={RoutePath.INVITATIONS}
+                                    itemText={'Invitations'}
+                                    onChange={handleMove}
+                                />              
+                                <MenuItem
+                                    itemName={RoutePath.SUGGESTATIONS}
+                                    itemText={'Suggestations'}
+                                    onChange={handleMove}
+                                />              
+                                <MenuItem
+                                    itemName={RoutePath.FRIENDS}
+                                    itemText={'Friends'}
+                                    onChange={handleMove}
+                                />              
+                            </ul>
+                        </Tooltip>
+                    </div>
             </div>    
         </div>
     </div>

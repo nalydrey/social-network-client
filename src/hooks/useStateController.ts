@@ -1,4 +1,3 @@
-import { current } from "@reduxjs/toolkit"
 import { UserModel } from "../models/UserModel"
 import { addFriendToCurrentUser, addInvitationToCurrentUser, addSuggestationToCurrentUser, deleteFriendFromCurrentUser, deleteInvitationFromCurrentUser, deleteSuggestationFromCurrentUser } from "../slices/currentUserSlice"
 import { addUserToFriends, deleteFromFriends } from "../slices/friendSlice"
@@ -6,8 +5,6 @@ import { deleteFriendFromUsers } from "../slices/usersSlice"
 import { useAppDispatch, useAppSelector } from "./hooks"
 import { addMyRequest, deleteMyRequest } from "../slices/suggestationSlice"
 import { addToInvitation, deleteFromInvitation } from "../slices/invitationSlice"
-import { socket } from "../App"
-import { SocketEmmits } from "../enums/SocketEnums"
 
 
 type UserParam = ({user}: {user: UserModel}) => void
@@ -77,9 +74,6 @@ export const useStateController: StateController = ( ) => {
             dispatch(deleteFriendFromUsers({friendId: currentUser._id, userId: userId}))
         }
     }
-
-  
- 
 
     return {
         moveToSuggestation,

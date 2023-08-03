@@ -1,21 +1,19 @@
 import {useState, useEffect} from 'react'
 import { RoundButton } from '../UI/RoundButton'
-import { BellIcon} from '@heroicons/react/24/solid'
+import { BellIcon, ChevronLeftIcon} from '@heroicons/react/24/solid'
 import { ChatItem } from './ChatItem'
 import { useAppDispatch, useAppSelector } from '../../hooks/hooks'
-import { ChatModel } from '../../models/ChatModel'
 import { ContentBox } from '../UI/ContentBox'
 import { URL } from '../../http'
-import { MessageModel} from '../../models/MessageModel'
-import { UserModel } from '../../models/UserModel'
 import { socket } from '../../App'
-import { Chat, decreaseCounter, activateChat, deactivateChat, setTypingStatus } from '../../slices/chatSlice'
+import { decreaseCounter, activateChat, deactivateChat, setTypingStatus, getMyChats, chatOpen } from '../../slices/chatSlice'
 import { createTempMessage, getMessages } from '../../slices/messagesSlice'
 import { ChatHeader } from '../Layout/chat/ChatHeader'
 import { nanoid } from '@reduxjs/toolkit'
 import { ChatForm } from '../Layout/chat/ChatForm'
 import { ChatContent } from '../Layout/chat/ChatContent'
 import { SocketEmmits } from '../../enums/SocketEnums'
+import { toggleChat } from '../../slices/appSlice'
 
 
 
@@ -25,18 +23,17 @@ export const ChatBar = () => {
     const text = 'No Chats, while'
     const dispatch = useAppDispatch()
 
-    const {messageCounter} = useAppSelector<Chat>(state => state.chats)
-    const chats = useAppSelector<ChatModel[]>(state => state.chats.container)
+    const {messageCounter} = useAppSelector(state => state.chats)
+    const chats = useAppSelector(state => state.chats.container)
     const activeChat = chats.find(chat => chat.isActive)
-    const messages = useAppSelector<MessageModel[]>(state => state.messages.container)
-    const currentUser = useAppSelector<UserModel>(state => state.currentUser.user)
+    const messages = useAppSelector(state => state.messages.container)
+    const currentUser = useAppSelector(state => state.currentUser.user)
+    const isOpenChat = useAppSelector(state => state.chats.isOpenChatBar)
 
-    const [isOpen, setIsOpen] = useState<boolean>(false)
-    const [isOpenChat, setIsOpenChat] = useState<boolean>(true)
 
     useEffect (()=>{
         if(activeChat){
-            setIsOpen(true)
+            dispatch(toggleChat())
         }
     },[activeChat?._id])
   
@@ -45,6 +42,8 @@ export const ChatBar = () => {
             dispatch(getMessages({chat: activeChat._id}))
         }
     },[activeChat?._id])
+
+  
 
 
 
@@ -79,11 +78,6 @@ export const ChatBar = () => {
             dispatch(activateChat(chatId))
         }
 
-    }
-
-    const handleOpen = () => {
-        setIsOpen(!isOpen)
-        if(!isOpenChat) setIsOpenChat(!isOpenChat)
     }
 
     const handleSubmit = (text: string) => {
@@ -127,78 +121,71 @@ export const ChatBar = () => {
     const activeChatUser = activeChat && activeChat.users[0]
 
   return (
-    <div className='absolute bottom-2 top-2 right-2  flex flex-col items-end gap-3 z-20'>
-        <div className={`relative grow bg-red-300 w-0 `}>
+    <div className={`bg-orange-200/90 z-20 py-12 fixed right-0 top-20 h-screen duration-300 shadow-light ${isOpenChat ? '':'translate-x-3/4'}`}>
+        <RoundButton
+            className={`absolute top-0  -translate-y-full -translate-x-1/2 ${isOpenChat ? 'rotate-180': ''}`}
+            icon = {<ChevronLeftIcon/>}
+            onClick={()=>dispatch(chatOpen(!isOpenChat))}
+        />
+        <ul className='flex flex-col items-center p-2'>
             {
-                activeChatUser && 
-                <div className={`absolute top-0 right-20  duration-300  ${isOpen ? 'scale-1': 'scale-0'}`}>
-                    <ContentBox 
-                        title='Chat'
-                        className='min-w-[400px]'
-                    >
-                       <ChatHeader
-                            isTyping = {activeChat.isTyping}
-                            chatName={activeChatUser.private.firstName + ' ' + activeChatUser.private.lastName}
-                            isOnline = {activeChatUser.isOnline}
-                            avatar = {activeChatUser.private.avatar ? URL + activeChatUser.private.avatar : ''}
-                            onHide={handlerHideChat}
-                            onDelete={handlerOnDeleteChat}
-                       />
-                       
-                       <ChatContent
-                            isOpen = {isOpen}
-                            messageCounter = {messageCounter}
-                            currentUserId={currentUser._id}
-                            content={messages}
-                            onVisible={handlerOnVisible}
-                            onDelete={handlerDeleteMessage}
-                            onEdit={()=>{}}
-                            offTyping={()=>{dispatch(setTypingStatus({chatId: activeChat._id, status: false }))}}
-                       />
-                        
-                        <ChatForm
-                            onSubmit = {handleSubmit}
-                            onStartTyping = {headerStartTyping}
-                            onFinishTyping = {headerFinishTyping}
-                        />
-                    </ContentBox>
-                </div>
+                !!chats.length ?
+                chats.map(chat => (
+                    <ChatItem 
+                        key ={chat._id}
+                        chatId={chat._id}
+                        isActive = {activeChat?._id === chat._id}
+                        isTyping = {chat.isTyping}
+                        src={chat.users[0].private.avatar}
+                        isOnline ={chat.users[0].isOnline}
+                        counter={chat.unreadMessageCount}
+                        onClick={handleOpenChat}
+                    />
+                ))
+                :
+                Array.from(text).map((word, i) => (
+                <li key={i} className='font-bold text-3xl text-sky-700 px-5'>{word}</li>
+                ))
             }
-            <ul className={`flex flex-col h-full gap-3 duration-300 absolute right-0 bg-orange-200 rounded-xl p-2 ${isOpen? 'scale-1' : 'scale-0'}`}>
-                {
-                    !!chats.length ?
-                    chats.map(chat => (
-                        <ChatItem 
-                            key ={chat._id}
-                            chatId={chat._id}
-                            isActive = {activeChat?._id === chat._id}
-                            isTyping = {chat.isTyping}
-                            src={chat.users[0].private.avatar}
-                            isOnline ={chat.users[0].isOnline}
-                            counter={chat.unreadMessageCount}
-                            onClick={handleOpenChat}
-                        />
-                    ))
-                    :
-                    Array.from(text).map((word, i) => (
-                    <li key={i} className='font-bold text-3xl text-sky-700 px-5'>{word}</li>
-                    ))
-                }
-            </ul>
-        </div>
-        <div className='flex justify-center items-center'>
-            <div className="relative">
-                <RoundButton
-                    d = {14}
-                    icon={<BellIcon className="w-10 h-10 text-gray-100"/>}
-                    onClick={handleOpen}
+        </ul>
+        {
+            activeChatUser && 
+            <div className={`absolute top-2 left-0 -translate-x-[110%]  duration-300 `}>
+                <ContentBox 
+                    title='Chat'
+                    className='min-w-[400px]'
+                >
+                <ChatHeader
+                        isTyping = {activeChat.isTyping}
+                        chatName={activeChatUser.private.firstName + ' ' + activeChatUser.private.lastName}
+                        isOnline = {activeChatUser.isOnline}
+                        avatar = {activeChatUser.private.avatar ? URL + activeChatUser.private.avatar : ''}
+                        onHide={handlerHideChat}
+                        onDelete={handlerOnDeleteChat}
                 />
+                
                 {
-                    !!messageCounter &&
-                    <span className="px-2 shadow-light font-bold text-gray-700 absolute top-0 left-0 rounded-l-xl rounded-r-xl -translate-y-1/2 bg-orange-500">{messageCounter}</span>
+                    currentUser &&
+                    <ChatContent
+                        isOpen = {isOpenChat}
+                        messageCounter = {messageCounter}
+                        currentUserId={currentUser._id}
+                        content={messages}
+                        onVisible={handlerOnVisible}
+                        onDelete={handlerDeleteMessage}
+                        onEdit={()=>{}}
+                        offTyping={()=>{dispatch(setTypingStatus({chatId: activeChat._id, status: false }))}}
+                    />
                 }
+                
+                    <ChatForm
+                        onSubmit = {handleSubmit}
+                        onStartTyping = {headerStartTyping}
+                        onFinishTyping = {headerFinishTyping}
+                    />
+                </ContentBox>
             </div>
-        </div>
+        }
     </div>
   )
 }

@@ -14,7 +14,7 @@ export const Layout = () => {
   return (
     <div className='flex flex-col min-h-screen '>
         <Header/>
-        <div className='relative flex bg-orange-100 grow'>
+        <div className='relative flex bg-orange-100 grow p-20'>
           <Outlet/>
           <ChatBar/>
           <Info

@@ -13,11 +13,13 @@ import { Endpoints } from "../enums/Endpoints"
         isActive: boolean
         error: string
         messageCounter: number
+        isOpenChatBar: boolean
     }
 
     const initialState: Chat = {
         container: [],
         messageCounter: 0,
+        isOpenChatBar: false,
         isLoading: false,
         isActive: false,
         error: ''
@@ -29,6 +31,8 @@ import { Endpoints } from "../enums/Endpoints"
       async (currentUserId: string ) => {
           //Получаем свои чаты
           const {data} = await axios.get<{chats: ChatModel[]}>(`${Endpoints.CHATS}/my`) 
+          console.log(data);
+          
           //удалить текущего потьзователя из чата
           let counter = 0
           data.chats.forEach(chat => {
@@ -68,6 +72,9 @@ export const chatSlice = createSlice({
   name: "chats",
   initialState,
   reducers: {
+    chatOpen: (state, action: PayloadAction<boolean>) => {
+      state.isOpenChatBar = action.payload
+    },
     decreaseCounter: (state, action: PayloadAction<{chatId: string}>) => {
       const chat = state.container.find(chat => chat._id === action.payload.chatId)
       if (chat){
@@ -162,5 +169,6 @@ export const {
   increaseCounter,
   chatUserConnect,
   chatUserDisconnect,
-  setTypingStatus
+  setTypingStatus,
+  chatOpen
 } = chatSlice.actions

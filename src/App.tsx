@@ -1,6 +1,5 @@
 import { useEffect} from 'react'
 import { Users } from "./components/pages/Users"
-import { UserModel } from './models/UserModel'
 import { enter} from './slices/currentUserSlice'
 import { Route, Routes, useNavigate } from "react-router-dom"
 import { useAppDispatch, useAppSelector } from "./hooks/hooks"
@@ -16,12 +15,12 @@ import {io} from 'socket.io-client'
 import { Layout } from './components/Layout/Layout'
 import { MainUser } from './components/pages/MainUser'
 import { Home } from './components/pages/Home'
-import { Login } from './components/Forms/Login'
 import { RegisterPage } from './components/pages/RegisterPage'
 import { RoutePath } from './enums/RouteEnums'
 import { LocalStorageNames } from './enums/LocalStorageEnums'
 import { LoginPage } from './components/pages/LoginPage'
-import { FriendBox } from './components/Boxes/FriendBox'
+import { FriendBox } from './components/pages/FriendBox'
+import { useLogic } from './hooks/useLogic'
 
 
 export const socket = io(URL, {auth:{
@@ -36,7 +35,25 @@ function App() {
 
   const controller = useStateController()
 
-  const currentUser = useAppSelector<UserModel | null>(state => state.currentUser.user)
+  const {
+    acceptFriend,
+    cancelSuggestation,
+    deleteFriend,
+    goToChat,
+    rejectFriend
+  } = useLogic()
+
+  const currentUser = useAppSelector(state => state.currentUser.user)
+
+  const {
+    friends,
+    invitations,
+    suggestations
+  } = useAppSelector(state => ({
+          friends: state.friends.container,
+          suggestations: state.suggestations.container,
+          invitations: state.invitations.container
+  }))
   
   const dispatch = useAppDispatch()
 
@@ -52,7 +69,6 @@ function App() {
   },[])
 
   useEffect(()=>{
-    console.log('effect');
     navigate(RoutePath.HOME)
    if (currentUser){
       subscribes(dispatch, currentUser, controller)
@@ -71,7 +87,31 @@ function App() {
             <Route path={RoutePath.PROFILE} element={<Profile />}/>
             <Route path={RoutePath.MY_POSTS} element={<MyPosts />} />
             <Route path={RoutePath.POSTS} element={<Posts />} />
-            {/* <Route path={RoutePath.FRIENDS} element={<FriendBox />} /> */}
+            <Route path={RoutePath.FRIENDS} element={
+              <FriendBox 
+                title='Friends'
+                content={friends}
+                onWriteMessage={goToChat}
+                onDeleteFromFriends={deleteFriend}
+              />}
+             />
+            <Route path={RoutePath.INVITATIONS} element={
+              <FriendBox 
+                title='Invitations'
+                content={invitations}  
+                onWriteMessage={goToChat}
+                onAccept={acceptFriend}
+                onReject={rejectFriend}
+              />}
+            />
+            <Route path={RoutePath.SUGGESTATIONS} element={
+              <FriendBox 
+                title='Suggestations'
+                content={suggestations}  
+                onWriteMessage={goToChat}
+                onCancel = {cancelSuggestation}
+              />}
+            />
           </Route>
           <Route path={RoutePath.REGISTER} element={<RegisterPage/>}/>
           <Route path={RoutePath.LOGIN} element={<LoginPage/>}/>

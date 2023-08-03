@@ -2,10 +2,12 @@ import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 
 interface AppSlice {
     menuWindow: boolean
+    isOpenChat: boolean
 }
 
 const initialState: AppSlice = {
-    menuWindow: false
+    menuWindow: false,
+    isOpenChat: false
 }
 
 const appSlice = createSlice({
@@ -14,10 +16,13 @@ const appSlice = createSlice({
     reducers: {
         toggleMenu: (state) => {
             state.menuWindow = !state.menuWindow
+        },
+        toggleChat: (state) => {
+            state.isOpenChat = !state.isOpenChat
         }
     }
 })
 
 export default appSlice.reducer
 
-export const { toggleMenu } = appSlice.actions
+export const { toggleMenu, toggleChat } = appSlice.actions

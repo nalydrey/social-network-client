@@ -47,6 +47,7 @@ export const ChatHeader = ({
             <p className={`text-center text-lg font-medium text-blue-600 h-7 animate-bounce  duration-300 ${isTyping ? 'opacity-100': 'opacity-0'}`}>Typing...</p>
         </div>
         <div className="relative">
+                        
                         <button className=""
                             onClick={handleOpen}
                         >

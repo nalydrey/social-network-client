@@ -28,6 +28,7 @@ export const InputButton = ({
         <input  className='hidden' 
                 type='file' 
                 id={name}
+                name = {name}
                 accept='.jpg, .png' 
                 onChange={onChange}
         />

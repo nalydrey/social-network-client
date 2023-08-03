@@ -1,9 +1,8 @@
-import { useState, ChangeEvent, KeyboardEvent, SyntheticEvent, useRef } from 'react';
+import { useState, ChangeEvent, KeyboardEvent } from 'react';
 import { useFormik } from 'formik'
 import { RoundButton } from '../../UI/RoundButton'
 import { PaperAirplaneIcon } from '@heroicons/react/24/solid'
 import * as Yup from 'yup'
-import { socket } from '../../../App';
 
 interface ChatFormProps {
     onStartTyping: () => void
@@ -99,7 +98,7 @@ export const ChatForm = ({
             title='Send'
             d={10}
             classWrap='self-end'
-            icon = {<PaperAirplaneIcon className='w-6 h-6 text-slate-300'/>}
+            icon = {<PaperAirplaneIcon/>}
             type='submit' 
         />
     </form>
