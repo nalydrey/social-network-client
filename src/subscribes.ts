@@ -37,8 +37,6 @@ export const subscribes: SubscribesFunc = (dispatch, currentUser, controller) =>
         dispatch(createMessage(data))
     })
     socket.on<SocketEvents>(SocketEvents.CHAT_IS_CREATED, (data) => {
-        console.log(data);
-        
         dispatch(addCreatedChat({...data, currentUserId: currentUser._id}))
     })
     socket.on<SocketEvents>(SocketEvents.MESSAGE_IS_READ, (data) => {

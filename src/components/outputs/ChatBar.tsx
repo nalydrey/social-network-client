@@ -43,10 +43,6 @@ export const ChatBar = () => {
         }
     },[activeChat?._id])
 
-  
-
-
-
     const handlerOnVisible = (messageId: string, messageUser: string, isRead: boolean, chatId: string) => {
         if(currentUser && currentUser._id !== messageUser && !isRead){
             socket.emit<SocketEmmits>(SocketEmmits.READ_MESSAGE, {messageId, chatId})

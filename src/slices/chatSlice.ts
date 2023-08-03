@@ -62,8 +62,12 @@ import { Endpoints } from "../enums/Endpoints"
       dispatch(addMyChat(chat._id))
       dispatch(addChat({usersIds: chat.users.map(user => user._id), chatId: chat._id}))
       dispatch(deactivateChat(''))
+      const creator = chat.users[0]._id
       chat.users = chat.users.filter(user => user._id !== currentUserId);
-      chat.isActive = true
+      console.log(creator, currentUserId);
+      if(currentUserId === creator){
+        chat.isActive = true
+      }
       return {chat}
     }
   )

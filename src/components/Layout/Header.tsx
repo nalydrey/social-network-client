@@ -36,12 +36,15 @@ export const Header = () => {
       <div className="container flex items-center justify-between m-auto gap-5 sm:gap-10">
         <Link to={RoutePath.HOME} className="md:text-2xl font-bold text-xl text-gray-300 py-2 select-none">Sotial-Network</Link>
         <div className="grow flex justify-end">
-          <RoundButton
-              title="messages"
-              counter={messageCounter}
-              icon={<BellIcon />}
-              onClick={handlerChat}
-          />
+          {
+            currentUser &&
+            <RoundButton
+                title="messages"
+                counter={messageCounter}
+                icon={<BellIcon />}
+                onClick={handlerChat}
+            />
+          }
         </div>
         {
           currentUser ?
