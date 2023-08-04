@@ -40,7 +40,7 @@ export const setLike = createAsyncThunk(
     'posts/setLike',
     async (payload: {userId: string, postId: string, isLike: boolean}, {dispatch}) => {
         const {userId, postId, isLike} = payload
-        const {data} = await axios.put(`${Endpoints.POSTS}like/${postId}`, {isLike})
+        const {data} = await axios.put(`${Endpoints.POSTS}/like/${postId}`, {isLike})
         data.isChange &&
         isLike ? dispatch(toggleLike({userId, postId})) : dispatch(toggleDislike({userId, postId}))
         
