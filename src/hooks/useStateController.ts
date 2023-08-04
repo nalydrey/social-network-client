@@ -1,18 +1,21 @@
 import { UserModel } from "../models/UserModel"
-import { addFriendToCurrentUser, addInvitationToCurrentUser, addSuggestationToCurrentUser, deleteFriendFromCurrentUser, deleteInvitationFromCurrentUser, deleteSuggestationFromCurrentUser } from "../slices/currentUserSlice"
+import { addFriendToCurrentUser, addInvitationToCurrentUser, addSuggestationToCurrentUser, deleteChatFromCurrentUser, deleteFriendFromCurrentUser, deleteInvitationFromCurrentUser, deleteSuggestationFromCurrentUser } from "../slices/currentUserSlice"
 import { addUserToFriends, deleteFromFriends } from "../slices/friendSlice"
 import { deleteFriendFromUsers } from "../slices/usersSlice"
 import { useAppDispatch, useAppSelector } from "./hooks"
 import { addMyRequest, deleteMyRequest } from "../slices/suggestationSlice"
 import { addToInvitation, deleteFromInvitation } from "../slices/invitationSlice"
+import { removeChat } from "../slices/chatSlice"
 
 
 type UserParam = ({user}: {user: UserModel}) => void
 type StringParam = ({userId}: {userId: string}) => void
+type ChatParam = ({chatId}: {chatId: string}) => void
 
 export interface StateControllerReturn {
     // deleteFriend: StringParam
     // acceptInvitation: UserParam
+    deleteChat: ChatParam
     moveToFriend: UserParam
     moveToSuggestation: UserParam 
     moveToInvitation: UserParam 
@@ -75,7 +78,13 @@ export const useStateController: StateController = ( ) => {
         }
     }
 
+    const deleteChat: ChatParam = ({chatId}) => {
+        dispatch(deleteChatFromCurrentUser({chatId}))
+        dispatch(removeChat({chatId}))
+    }
+
     return {
+        deleteChat,
         moveToSuggestation,
         moveToInvitation,
         removeFromSuggestation,

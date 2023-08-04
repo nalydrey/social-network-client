@@ -26,9 +26,7 @@ const initialState: CurrentUserState = {
 export const enter = createAsyncThunk(
   "currentUser/enter", 
   async () => {
-  console.log('enter');
     const {data} = await axios<{user: UserModel | null, info: string}>(Endpoints.USER)
-    console.log(data.user);
     if(!data.user){
       data.user = null
     }  
@@ -43,9 +41,8 @@ export const enter = createAsyncThunk(
         localStorage.setItem(LocalStorageNames.TOKEN, data.token)
       } 
         dispatch(setInfo(data.info))
-
       return {user: data.user}
-  },
+    },
   )
  
   export const loginUser = createAsyncThunk(
@@ -59,16 +56,13 @@ export const enter = createAsyncThunk(
         dispatch(setInfo(data.info))
         data.user = null
       }
-
       return {user: data.user}
-  },
+    },
   )
 
   export const editUser = createAsyncThunk(
   "currentUser/editUser",
   async (editForm: EditUserForm) => {
-    console.log('edit');
-    
       const {data} = await axios.put(Endpoints.USER, editForm)
       return {user: data.user}
   },
@@ -92,10 +86,9 @@ export const changeMyPicture = createAsyncThunk(
 
 export const deleteUser = createAsyncThunk(
   "currentUser/deleteUser",
-  async (_ , {dispatch}) => {
-      const {data} = await axios.delete<{user: UserModel}>(Endpoints.USER)
+  async () => {
+      await axios.delete<{user: UserModel}>(Endpoints.USER)
       localStorage.removeItem(LocalStorageNames.TOKEN)
-      console.log(data);
       return
   },
 )

@@ -7,7 +7,7 @@ interface ContentBoxProps {
 }
 
 export const ContentBox = ({
-    className = 'box',
+    className,
     title,
     children
 }: ContentBoxProps) => {

@@ -3,7 +3,6 @@ import { Header } from './Header'
 import { ChatBar } from '../outputs/ChatBar'
 import { Info } from './Info'
 import { useAppSelector } from '../../hooks/hooks'
-import { MainMenu } from '../UI/MainMenu'
 
 export const Layout = () => {
 
@@ -22,9 +21,6 @@ export const Layout = () => {
           }
           <Info
             text={info}
-          />
-          <MainMenu
-            isOpen = {app.menuWindow}
           />
         </div>
     </div>

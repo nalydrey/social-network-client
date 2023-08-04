@@ -21,6 +21,7 @@ import { LocalStorageNames } from './enums/LocalStorageEnums'
 import { LoginPage } from './components/pages/LoginPage'
 import { FriendBox } from './components/pages/FriendBox'
 import { useLogic } from './hooks/useLogic'
+import { Chat } from './components/pages/Chat'
 
 
 export const socket = io(URL, {auth:{
@@ -69,10 +70,13 @@ function App() {
   },[])
 
   useEffect(()=>{
-    navigate(RoutePath.HOME)
-   if (currentUser){
+    if (currentUser){
+     navigate(RoutePath.HOME + RoutePath.USER)
       subscribes(dispatch, currentUser, controller)
       userLoads(dispatch, currentUser)
+    }
+    else {
+      navigate(RoutePath.HOME)
     }
     return () => {unsubscribe()}
   },[currentUserId])
@@ -87,6 +91,7 @@ function App() {
             <Route path={RoutePath.PROFILE} element={<Profile />}/>
             <Route path={RoutePath.MY_POSTS} element={<MyPosts />} />
             <Route path={RoutePath.POSTS} element={<Posts />} />
+            <Route path={RoutePath.CHATS} element={<Chat />} />
             <Route path={RoutePath.FRIENDS} element={
               <FriendBox 
                 title='Friends'

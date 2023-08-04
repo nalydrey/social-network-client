@@ -1,5 +1,5 @@
 import { socket } from "./App"
-import { addCreatedChat, chatUserConnect, chatUserDisconnect, deleteChat, setTypingStatus } from "./slices/chatSlice"
+import { addCreatedChat, chatUserConnect, chatUserDisconnect, setTypingStatus } from "./slices/chatSlice"
 import { createMessage, deleteMessage, readMessage } from "./slices/messagesSlice"
 import { connectUser, disconnectUser } from "./slices/usersSlice"
 import type { AppDispatch } from "./store/store"
@@ -14,11 +14,12 @@ type SubscribesFunc = (dispatch: AppDispatch, currentUser: UserModel, controller
 export const subscribes: SubscribesFunc = (dispatch, currentUser, controller) => {
 
     const {
+        deleteChat,
         moveToInvitation,
         removeFromInvitation,
         removeFromSuggestation,
         moveToFriend,
-        removeFromFriend
+        removeFromFriend,
         } = controller
 
     socket.emit<SocketEmmits>(SocketEmmits.ENTER_USER, {userId: currentUser._id})
@@ -46,7 +47,7 @@ export const subscribes: SubscribesFunc = (dispatch, currentUser, controller) =>
         dispatch(deleteMessage({message, currentUserId: currentUser._id}))
     })
     socket.on<SocketEvents>(SocketEvents.CHAT_IS_DELETED, (chatId: string)=>{
-        dispatch(deleteChat(chatId))
+        deleteChat({chatId})
     })
     socket.on<SocketEvents>(SocketEvents.TYPING_STARTED, (chatId: string)=>{
         dispatch(setTypingStatus({chatId, status: true}))

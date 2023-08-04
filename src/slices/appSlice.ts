@@ -1,28 +1,23 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 
 interface AppSlice {
-    menuWindow: boolean
-    isOpenChat: boolean
+    isOpenChatBar: boolean
 }
 
 const initialState: AppSlice = {
-    menuWindow: false,
-    isOpenChat: false
+    isOpenChatBar: false,
 }
 
 const appSlice = createSlice({
     name: 'app',
     initialState,
     reducers: {
-        toggleMenu: (state) => {
-            state.menuWindow = !state.menuWindow
-        },
-        toggleChat: (state) => {
-            state.isOpenChat = !state.isOpenChat
+        openChatBar: (state, action: PayloadAction<boolean>) => {
+            state.isOpenChatBar = action.payload
         }
     }
 })
 
 export default appSlice.reducer
 
-export const { toggleMenu, toggleChat } = appSlice.actions
+export const { openChatBar } = appSlice.actions

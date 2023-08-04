@@ -1,20 +1,14 @@
-import { RoundButton } from '../UI/RoundButton'
-import { ChevronLeftIcon} from '@heroicons/react/24/solid'
-import { ChatItem } from './ChatItem'
+import React from 'react'
 import { useAppDispatch, useAppSelector } from '../../hooks/hooks'
-import { ContentBox } from '../UI/ContentBox'
-import { URL } from '../../http'
-import { setTypingStatus } from '../../slices/chatSlice'
-import { ChatHeader } from '../Layout/chat/ChatHeader'
-import { ChatForm } from '../Layout/chat/ChatForm'
-import { ChatContent } from '../Layout/chat/ChatContent'
 import { useChat } from '../../hooks/useChat'
-import { openChatBar } from '../../slices/appSlice'
+import { ContentBox } from '../UI/ContentBox'
+import { ChatHeader } from '../Layout/chat/ChatHeader'
+import { ChatContent } from '../Layout/chat/ChatContent'
+import { ChatForm } from '../Layout/chat/ChatForm'
+import { setTypingStatus } from '../../slices/chatSlice'
+import { ChatItem } from '../outputs/ChatItem'
 
-
-
-
-export const ChatBar = () => {
+export const Chat = () => {
 
     const dispatch = useAppDispatch()
 
@@ -36,15 +30,15 @@ export const ChatBar = () => {
         finishTyping,
         deleteMessage,
     } = useChat()
-    
+
+
+
   return (
-    <div className={`${chats.length ? '': 'hidden'} hidden md:block bg-orange-200/90 z-20 py-12 fixed right-0 top-20 h-screen duration-300 shadow-light ${isOpenChatBar ? '':'translate-x-3/4'}`}>
-        <RoundButton
-            className={`absolute top-0  -translate-y-full -translate-x-1/2 ${isOpenChatBar ? 'rotate-180': ''}`}
-            icon = {<ChevronLeftIcon/>}
-            onClick={()=>dispatch(openChatBar(!isOpenChatBar))}
-        />
-        <ul className='flex flex-col items-center p-2'>
+    <ContentBox 
+        title='Chat'
+        className='min-w-[400px]'
+    >
+        <ul className='flex items-center gap-5 p-2 border-b-4 border-sky-700'>
             {
                 chats.map(chat => (
                     <ChatItem 
@@ -61,12 +55,8 @@ export const ChatBar = () => {
             }
         </ul>
         {
-            activeChat && activeChatUser && 
-            <div className={`absolute top-2 left-0 -translate-x-[110%]  duration-300 `}>
-                <ContentBox 
-                    title='Chat'
-                    className='min-w-[400px]'
-                >
+                activeChat && activeChatUser && 
+            <>
                 <ChatHeader
                         isTyping = {activeChat.isTyping}
                         chatName={activeChatUser.private.firstName + ' ' + activeChatUser.private.lastName}
@@ -94,9 +84,8 @@ export const ChatBar = () => {
                         onStartTyping = {startTyping}
                         onFinishTyping = {finishTyping}
                     />
-                </ContentBox>
-            </div>
+            </>
         }
-    </div>
+    </ContentBox>
   )
 }

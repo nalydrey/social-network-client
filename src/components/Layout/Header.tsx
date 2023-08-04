@@ -6,7 +6,7 @@ import { quit } from "../../slices/currentUserSlice"
 import { RoutePath } from "../../enums/RouteEnums"
 import { BellIcon } from "@heroicons/react/24/solid"
 import { RoundButton } from "../UI/RoundButton"
-import { chatOpen } from "../../slices/chatSlice"
+import { openChatBar } from "../../slices/appSlice"
 
 
 export const Header = () => {
@@ -14,7 +14,8 @@ export const Header = () => {
   const navigate = useNavigate()
 
   const currentUser = useAppSelector(state => state.currentUser.user)
-  const {messageCounter, isOpenChatBar} = useAppSelector(state => state.chats)
+  const {messageCounter} = useAppSelector(state => state.chats)
+  const {isOpenChatBar} = useAppSelector(state => state.app)
 
   const dispatch = useAppDispatch()
 
@@ -27,12 +28,12 @@ export const Header = () => {
   }
 
  const handlerChat = () => {
-    dispatch(chatOpen(!isOpenChatBar))
+    dispatch(openChatBar(!isOpenChatBar))
  }
 
 
   return (
-    <header className="z-30 fixed w-full  bg-gradient-to-r from-sky-700/90 via-sky-900/90 to-sky-700/90 py-4 px-2">
+    <header className="z-30 fixed w-full backdrop-blur-md bg-gradient-to-r from-sky-700/90 via-sky-900/90 to-sky-700/90 py-4 px-2">
       <div className="container flex items-center justify-between m-auto gap-5 sm:gap-10">
         <Link to={RoutePath.HOME} className="md:text-2xl font-bold text-xl text-gray-300 py-2 select-none">Sotial-Network</Link>
         <div className="grow flex justify-end">

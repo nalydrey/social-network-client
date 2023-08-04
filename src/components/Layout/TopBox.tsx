@@ -145,6 +145,11 @@ export const TopBox = ({
                                     itemText={'Friends'}
                                     onChange={handleMove}
                                 />              
+                                <MenuItem
+                                    itemName={RoutePath.CHATS}
+                                    itemText={'Chats'}
+                                    onChange={handleMove}
+                                />              
                             </ul>
                         </Tooltip>
                     </div>

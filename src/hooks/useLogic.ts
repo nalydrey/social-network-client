@@ -7,6 +7,7 @@ import { activateChat } from "../slices/chatSlice"
 import { useAppDispatch, useAppSelector } from "./hooks"
 import { useStateController } from "./useStateController"
 import { AsyncThunk } from "@reduxjs/toolkit"
+import { openChatBar } from "../slices/appSlice"
 
 type LogicFunc = (id: string) => void
 type LogicFuncUser = (user: UserModel) => void
@@ -36,7 +37,7 @@ export const useLogic = () => {
 
     const goToChat: (userId: string) => void = (userId) => {
         console.log(userId);
-        
+        dispatch(openChatBar(true))
         if(currentUser){
             const userChats = users.find((user) => user._id === userId)?.chats
             if (userChats) {

@@ -13,13 +13,11 @@ import { Endpoints } from "../enums/Endpoints"
         isActive: boolean
         error: string
         messageCounter: number
-        isOpenChatBar: boolean
     }
 
     const initialState: Chat = {
         container: [],
         messageCounter: 0,
-        isOpenChatBar: false,
         isLoading: false,
         isActive: false,
         error: ''
@@ -31,8 +29,6 @@ import { Endpoints } from "../enums/Endpoints"
       async (currentUserId: string ) => {
           //Получаем свои чаты
           const {data} = await axios.get<{chats: ChatModel[]}>(`${Endpoints.CHATS}/my`) 
-          console.log(data);
-          
           //удалить текущего потьзователя из чата
           let counter = 0
           data.chats.forEach(chat => {
@@ -44,13 +40,6 @@ import { Endpoints } from "../enums/Endpoints"
       },
   )
 
-  export const deleteChat = createAsyncThunk(
-    'chats/deleteChat',
-    (chatId: string, {dispatch}) => {
-        dispatch(deleteChatFromCurrentUser({chatId}))
-        return {chatId}
-    }
-  )
 
   export const addCreatedChat = createAsyncThunk(
     'chats/addCreatedChat',
@@ -76,9 +65,6 @@ export const chatSlice = createSlice({
   name: "chats",
   initialState,
   reducers: {
-    chatOpen: (state, action: PayloadAction<boolean>) => {
-      state.isOpenChatBar = action.payload
-    },
     decreaseCounter: (state, action: PayloadAction<{chatId: string}>) => {
       const chat = state.container.find(chat => chat._id === action.payload.chatId)
       if (chat){
@@ -93,7 +79,11 @@ export const chatSlice = createSlice({
         state.messageCounter++
       } 
     },
-
+    removeChat: (state, action: PayloadAction<{chatId: string}>) => {
+      const count = state.container.find(chat => chat._id === action.payload.chatId)?.unreadMessageCount || 0
+      state.messageCounter = state.messageCounter - count
+      state.container = state.container.filter(chat => chat._id !== action.payload.chatId)
+    },
     activateChat: (state, action: PayloadAction<string>) => {
       state.container.forEach((chat) => {
         chat._id === action.payload
@@ -145,17 +135,7 @@ export const chatSlice = createSlice({
         state.container = action.payload.chats
         state.messageCounter = action.payload.counter
       })
-      .addCase(deleteChat.pending, (state, action) => {
-          state.isLoading = true
-      })
-      .addCase(deleteChat.fulfilled, (state, action) => {
-          const count = state.container.find(chat => chat._id === action.payload.chatId)?.unreadMessageCount || 0
-          state.messageCounter = state.messageCounter - count
-          state.container = state.container.filter(chat => chat._id !== action.payload.chatId)
-          state.isLoading = false
-      })
       .addCase(addCreatedChat.fulfilled, (state, action) => {
-        
         state.container.push(action.payload.chat)
       })
 
@@ -170,9 +150,9 @@ export const {
   addMessageToChat,
   disactivateChat,
   decreaseCounter,
+  removeChat,
   increaseCounter,
   chatUserConnect,
   chatUserDisconnect,
   setTypingStatus,
-  chatOpen
 } = chatSlice.actions

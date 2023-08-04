@@ -9,6 +9,6 @@ export enum RoutePath {
     INVITATIONS = 'invitations',
     REGISTER = '/register',
     LOGIN = '/login',
-    CHATS = '/chats',
+    CHATS = 'chats',
 
 }
